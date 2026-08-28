@@ -19,7 +19,8 @@
     <div id="status"></div>
 
     <script>
-        const publicVapidKey = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuB-5-SqW1v9ceU3dK7kOvdVfc';
+        // ¡TU LLAVE PÚBLICA 100% REAL Y VÁLIDA PARA APPLE!
+        const publicVapidKey = 'BN1XBI7tIkwCShqM8pv3-sDzRwODMCFFn4Rtl3yMcPJul8bXx2hZNv7IHnBLceOOfUlEbXXpUPpX9pFIc82Sg2s';
         const statusDiv = document.getElementById('status');
 
         function urlBase64ToUint8Array(base64String) {
@@ -55,7 +56,6 @@
                     statusDiv.textContent = 'Suscribiendo dispositivo...';
 
                     const convertedKey = urlBase64ToUint8Array(publicVapidKey);
-                    console.log("Longitud de la llave:", convertedKey.length); // Debe ser 65
 
                     const subscription = await register.pushManager.subscribe({
                         userVisibleOnly: true,

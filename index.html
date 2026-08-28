@@ -21,13 +21,13 @@
     </style>
 </head>
 <body>
-    <h1>Bienvenido a tu App</h1>
+    <h1>Notificaciones de MTTO maquinaria CVB</h1>
     <p>Presiona el botón para activar las notificaciones:</p>
     <button id="notifyBtn">Activar Notificaciones</button>
     <div id="status"></div>
 
     <div id="history-container">
-        <h3>Historial de Alertas</h3>
+        <h3>HISTORIAL DE ALERTAS (Solo muestra las ultimas 20)</h3>
         <div id="lista-historial">Cargando historial...</div>
     </div>
 
@@ -85,9 +85,15 @@
                             return;
                         }
 
-                        registros.reverse();
+                        // 1. Ordenamos para que las más nuevas queden arriba
+                        registros.reverse(); 
+                        
+                        // 2. AQUÍ ESTÁ EL LÍMITE: Cortamos la lista para que solo guarde las primeras 20
+                        const ultimas20 = registros.slice(0, 20);
+
                         let html = '';
-                        registros.forEach(reg => {
+                        // 3. Dibujamos solo esas 20 en la pantalla
+                        ultimas20.forEach(reg => {
                             html += `
                                 <div class="history-card">
                                     <div class="history-title">${reg.title}</div>

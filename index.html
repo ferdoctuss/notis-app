@@ -46,9 +46,9 @@
             return outputArray;
         }
 
-        // Obligamos al iPhone a saltarse el caché fantasma con v=3
+        // RUTA ABSOLUTA BLINDADA: /notis-app/sw.js
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js?v=3')
+            navigator.serviceWorker.register('/notis-app/sw.js?v=4')
                 .then(() => {
                     console.log('Service Worker registrado correctamente');
                     cargarHistorial();
@@ -119,8 +119,8 @@
                 if (permission === 'granted') {
                     statusDiv.textContent = 'Paso 2: Permiso OK. Cargando memoria...';
 
-                    // AQUÍ ESTÁ LA MAGIA: Forzamos el registro directo en lugar de esperar el limbo de Apple
-                    const register = await navigator.serviceWorker.register('sw.js?v=3');
+                    // RUTA ABSOLUTA BLINDADA: /notis-app/sw.js
+                    const register = await navigator.serviceWorker.register('/notis-app/sw.js?v=4');
                     
                     statusDiv.textContent = 'Paso 3: Conectando llaves con Apple...';
                     const convertedKey = urlBase64ToUint8Array(publicVapidKey);

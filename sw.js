@@ -1,149 +1,52 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App de Notificaciones</title>
-    
-    <link rel="apple-touch-icon" href="icono.png">
-    <link rel="manifest" href="manifest.json">
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 20px; text-align: center; background: #f4f4f9; color: #333; }
-        button { background: #007aff; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; margin-top: 10px; }
-        button:active { background: #0056b3; }
-        #status { margin-top: 15px; font-weight: bold; color: #555; word-break: break-all; font-size: 13px; }
+const DB_NAME = 'NotisAppDB';
+const STORE_NAME = 'historial';
+
+function guardarEnHistorial(titulo, cuerpo) {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, 1);
         
-        #history-container { margin-top: 30px; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto; }
-        .history-card { background: white; padding: 12px 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .history-title { font-weight: bold; color: #007aff; font-size: 14px; margin-bottom: 3px; }
-        .history-body { font-size: 14px; color: #333; margin-bottom: 5px; }
-        .history-time { font-size: 11px; color: #888; text-align: right; }
-    </style>
-</head>
-<body>
-    <h1>Bienvenido a tu App</h1>
-    <p>Presiona el botón para activar las notificaciones:</p>
-    <button id="notifyBtn">Activar Notificaciones</button>
-    <div id="status"></div>
-
-    <div id="history-container">
-        <h3>Historial de Alertas</h3>
-        <div id="lista-historial">Cargando historial...</div>
-    </div>
-
-    <script>
-        const publicVapidKey = 'BN1XBI7tIkwCShqM8pv3-sDzRwODMCFFn4Rtl3yMcPJul8bXx2hZNv7IHnBLceOOfUlEbXXpUPpX9pFIc82Sg2s';
-        const statusDiv = document.getElementById('status');
-
-        function urlBase64ToUint8Array(base64String) {
-            const padding = '='.repeat((4 - base64String.length % 4) % 4);
-            const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
-            const rawData = window.atob(base64);
-            const outputArray = new Uint8Array(rawData.length);
-            for (let i = 0; i < rawData.length; ++i) {
-                outputArray[i] = rawData.charCodeAt(i);
+        request.onupgradeneeded = function(event) {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
             }
-            return outputArray;
-        }
+        };
 
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(() => {
-                    console.log('Service Worker registrado');
-                    cargarHistorial();
-                })
-                .catch(err => console.log('Error SW:', err));
-        }
-
-        // Función para leer el historial desde IndexedDB
-        function cargarHistorial() {
-            const listaDiv = document.getElementById('lista-historial');
-            const request = indexedDB.open('NotisAppDB', 1);
-
-            request.onupgradeneeded = function(event) {
-                const db = event.target.result;
-                if (!db.objectStoreNames.contains('historial')) {
-                    db.createObjectStore('historial', { keyPath: 'id', autoIncrement: true });
-                }
+        request.onsuccess = function(event) {
+            const db = event.target.result;
+            const transaction = db.transaction(STORE_NAME, 'readwrite');
+            const store = transaction.objectStore(STORE_NAME);
+            
+            const nuevaNotificacion = {
+                title: titulo,
+                body: cuerpo,
+                fecha: new Date().toLocaleString()
             };
 
-            request.onsuccess = function(event) {
-                const db = event.target.result;
-                if (!db.objectStoreNames.contains('historial')) {
-                    listaDiv.innerHTML = '<p style="color: #778; font-size: 13px;">No hay alertas registradas aún.</p>';
-                    return;
-                }
+            store.add(nuevaNotificacion);
+            transaction.oncomplete = () => resolve();
+            transaction.onerror = (err) => reject(err);
+        };
 
-                const transaction = db.transaction('historial', 'readonly');
-                const store = transaction.objectStore('historial');
-                const getAllRequest = store.getAll();
+        request.onerror = (err) => reject(err);
+    });
+}
 
-                getAllRequest.onsuccess = function() {
-                    const registros = getAllRequest.result;
-                    if (registros.length === 0) {
-                        listaDiv.innerHTML = '<p style="color: #778; font-size: 13px;">No hay alertas registradas aún.</p>';
-                        return;
-                    }
+self.addEventListener('push', function(event) {
+    const data = event.data ? event.data.json() : {};
+    const title = data.title || 'Alerta';
+    const body = data.body || 'Nuevo mensaje.';
 
-                    registros.reverse(); // Mostrar la más reciente arriba
+    const options = {
+        body: body,
+        icon: 'icono.png',
+        badge: 'icono.png'
+    };
 
-                    let html = '';
-                    registros.forEach(reg => {
-                        html += `
-                            <div class="history-card">
-                                <div class="history-title">${reg.title}</div>
-                                <div class="history-body">${reg.body}</div>
-                                <div class="history-time">🕒 ${reg.fecha}</div>
-                            </div>
-                        `;
-                    });
-                    listaDiv.innerHTML = html;
-                };
-            };
-
-            request.onerror = function() {
-                listaDiv.innerHTML = '<p style="color: red; font-size: 13px;">Error al cargar el historial.</p>';
-            };
-        }
-
-        const btn = document.getElementById('notifyBtn');
-        btn.addEventListener('click', async () => {
-            if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-                statusDiv.textContent = 'Este navegador no soporta Push Notifications.';
-                return;
-            }
-
-            try {
-                const register = await navigator.serviceWorker.ready;
-                const permission = await Notification.requestPermission();
-                
-                if (permission === 'granted') {
-                    statusDiv.style.color = '#333';
-                    statusDiv.textContent = 'Suscribiendo dispositivo...';
-
-                    const convertedKey = urlBase64ToUint8Array(publicVapidKey);
-                    const subscription = await register.pushManager.subscribe({
-                        userVisibleOnly: true,
-                        applicationServerKey: convertedKey
-                    });
-
-                    await fetch('https://notis-server.onrender.com/subscribe', {
-                        method: 'POST',
-                        body: JSON.stringify(subscription),
-                        headers: { 'Content-Type': 'application/json' }
-                    });
-
-                    statusDiv.style.color = 'green';
-                    statusDiv.textContent = '¡Dispositivo suscrito con éxito!';
-                } else {
-                    statusDiv.style.color = 'red';
-                    statusDiv.textContent = 'Permisos de notificación denegados.';
-                }
-            } catch (error) {
-                statusDiv.style.color = 'red';
-                statusDiv.textContent = 'Error: ' + error.message;
-            }
-        });
-    </script>
-</body>
-</html>
+    event.waitUntil(
+        Promise.all([
+            self.registration.showNotification(title, options),
+            guardarEnHistorial(title, body)
+        ])
+    );
+});

@@ -9,7 +9,7 @@
         body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 20px; text-align: center; background: #f4f4f9; color: #333; }
         button { background: #007aff; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; margin-top: 20px; }
         button:active { background: #0056b3; }
-        #status { margin-top: 20px; font-weight: bold; color: #555; }
+        #status { margin-top: 20px; font-weight: bold; color: #555; word-break: break-all; font-size: 13px; }
     </style>
 </head>
 <body>
@@ -19,7 +19,20 @@
     <div id="status"></div>
 
     <script>
+        // Tu llave pública VAPID integrada
+        const publicVapidKey = 'B1R1Ij8UkpYDz2jk6Ghnnx8MsrUCK035czjk36ekV5wpBx655WXsl4KrWH4aWbmcpttGkT28j-mM8jHLMDiJ--M';
         const statusDiv = document.getElementById('status');
+
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
+        }
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js')
@@ -29,27 +42,37 @@
 
         const btn = document.getElementById('notifyBtn');
         btn.addEventListener('click', async () => {
-            if (!('Notification' in window)) {
-                statusDiv.textContent = 'Este navegador no soporta notificaciones.';
+            if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                statusDiv.textContent = 'Este navegador o dispositivo no soporta Push Notifications.';
                 return;
             }
 
             try {
+                const register = await navigator.serviceWorker.ready;
                 const permission = await Notification.requestPermission();
+                
                 if (permission === 'granted') {
+                    statusDiv.style.color = '#333';
+                    statusDiv.textContent = 'Suscribiendo dispositivo...';
+
+                    const subscription = await register.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+                    });
+
                     statusDiv.style.color = 'green';
-                    statusDiv.textContent = '¡Permisos concedidos con éxito!';
-                    new Notification('¡Prueba exitosa!', { body: 'Las notificaciones ya están funcionando en tu app.' });
+                    statusDiv.textContent = '¡Suscripción exitosa! Token listo.';
+                    console.log(JSON.stringify(subscription));
                 } else if (permission === 'denied') {
                     statusDiv.style.color = 'red';
-                    statusDiv.textContent = 'Permisos denegados. Ve a los ajustes de tu iPhone para habilitarlos.';
+                    statusDiv.textContent = 'Permisos denegados en los ajustes del dispositivo.';
                 } else {
                     statusDiv.style.color = 'orange';
                     statusDiv.textContent = 'Permisos cerrados sin responder.';
                 }
             } catch (error) {
                 statusDiv.style.color = 'red';
-                statusDiv.textContent = 'Error al pedir permisos: ' + error;
+                statusDiv.textContent = 'Error: ' + error.message;
             }
         });
     </script>

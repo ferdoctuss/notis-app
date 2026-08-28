@@ -29,18 +29,45 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        /* Cabecera con Icono y Textos alineados */
+        .app-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--card-bg);
+            padding: 14px 16px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .app-logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            object-fit: cover;
+            flex-shrink: 0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .app-title-group {
+            display: flex;
+            flex-direction: column;
+        }
+
         h1 {
-            font-size: 20px;
+            font-size: 17px;
             font-weight: 700;
-            letter-spacing: -0.4px;
-            margin-bottom: 6px;
+            letter-spacing: -0.3px;
+            margin: 0;
             color: var(--text-main);
         }
 
-        p {
-            font-size: 14px;
+        .app-subtitle {
+            font-size: 13px;
             color: var(--text-secondary);
-            margin-bottom: 16px;
+            margin: 2px 0 0 0;
         }
 
         /* Tarjeta de Control Superior */
@@ -160,8 +187,14 @@
 </head>
 <body>
 
-    <h1>Notificaciones de MTTO</h1>
-    <p>Maquinaria CVB</p>
+    <!-- Cabecera Integrada con el Icono -->
+    <div class="app-header">
+        <img src="icono.png" alt="Logo" class="app-logo">
+        <div class="app-title-group">
+            <h1>Notificaciones MTTO</h1>
+            <p class="app-subtitle">Maquinaria CVB</p>
+        </div>
+    </div>
     
     <!-- Tarjeta de Control -->
     <div class="control-card">
@@ -214,7 +247,7 @@
                 if (subscription) {
                     btn.style.display = 'none';
                     instrucciones.style.display = 'none';
-                    statusDiv.style.color = '#34c759'; // Verde Apple
+                    statusDiv.style.color = '#34c759'; 
                     statusDiv.textContent = '✅ Dispositivo vinculado y activo';
                 }
             } catch (error) {

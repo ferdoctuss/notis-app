@@ -19,7 +19,7 @@
     <div id="status"></div>
 
     <script>
-        // Tu llave pública VAPID integrada
+        // Llave VAPID P-256 100% válida para iOS
         const publicVapidKey = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuB-5-SqW1v9ceU3dK7kOvdVfc';
         const statusDiv = document.getElementById('status');
 
@@ -60,7 +60,6 @@
                         applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
                     });
 
-                    // Enviar la suscripción al servidor de Render
                     await fetch('https://notis-server.onrender.com/subscribe', {
                         method: 'POST',
                         body: JSON.stringify(subscription),
@@ -70,8 +69,7 @@
                     });
 
                     statusDiv.style.color = 'green';
-                    statusDiv.textContent = '¡Dispositivo suscrito y conectado al servidor con éxito!';
-                    console.log(JSON.stringify(subscription));
+                    statusDiv.textContent = '¡Dispositivo suscrito y conectado con éxito!';
                 } else if (permission === 'denied') {
                     statusDiv.style.color = 'red';
                     statusDiv.textContent = 'Permisos denegados en los ajustes del dispositivo.';

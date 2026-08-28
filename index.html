@@ -8,59 +8,179 @@
     <link rel="apple-touch-icon" href="icono.png">
     <link rel="manifest" href="manifest.json">
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 20px; text-align: center; background: #f4f4f9; color: #333; }
-        
+        :root {
+            --primary: #0a84ff;
+            --primary-active: #0062cc;
+            --bg-color: #f2f2f7;
+            --card-bg: #ffffff;
+            --text-main: #1c1c1e;
+            --text-secondary: #8e8e93;
+            --border-radius: 14px;
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif; 
+            padding: 20px 16px; 
+            max-width: 480px; 
+            margin: 0 auto; 
+            text-align: center; 
+            background: var(--bg-color); 
+            color: var(--text-main); 
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.4px;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        /* Tarjeta de Control Superior */
+        .control-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            margin-bottom: 24px;
+        }
+
         /* Botón Principal */
-        button { background: #007aff; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        button:active { background: #0056b3; }
-        
-        /* Botón Secundario de Refrescar (Estilo iOS) */
+        button#notifyBtn { 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 14px 24px; 
+            font-size: 16px; 
+            font-weight: 600;
+            border-radius: 12px; 
+            cursor: pointer; 
+            width: 100%;
+            box-shadow: 0 4px 10px rgba(10, 132, 255, 0.3);
+            transition: all 0.2s ease; 
+        }
+        button#notifyBtn:active { 
+            background: var(--primary-active); 
+            transform: scale(0.98); 
+        }
+
+        /* Botón Secundario de Refrescar */
         .btn-refrescar {
             background: #e5e5ea;
-            color: #007aff;
+            color: var(--primary);
             border: none;
-            padding: 8px 16px;
-            font-size: 14px;
+            padding: 10px 18px;
+            font-size: 13px;
             font-weight: 600;
             border-radius: 20px;
             cursor: pointer;
-            margin-top: 15px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            transition: 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+            margin-top: 10px;
         }
-        .btn-refrescar:active { background: #d1d1d6; transform: scale(0.96); }
+        .btn-refrescar:active { 
+            background: #d1d1d6; 
+            transform: scale(0.96); 
+        }
 
-        #status { margin-top: 15px; font-weight: bold; color: #555; word-break: break-all; font-size: 13px; }
+        #status { 
+            margin-top: 12px; 
+            font-weight: 500; 
+            color: var(--text-secondary); 
+            word-break: break-all; 
+            font-size: 13px; 
+        }
         
-        #history-container { margin-top: 30px; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto; }
-        .history-card { background: white; padding: 12px 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .history-title { font-weight: bold; color: #007aff; font-size: 14px; margin-bottom: 3px; text-transform: uppercase; }
-        .history-body { font-size: 14px; color: #333; margin-bottom: 5px; }
-        .history-time { font-size: 11px; color: #888; text-align: right; }
+        /* Contenedor de Historial */
+        #history-container { 
+            text-align: left; 
+        }
+
+        #history-container h3 {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .history-card { 
+            background: var(--card-bg); 
+            padding: 16px; 
+            border-radius: var(--border-radius); 
+            margin-bottom: 12px; 
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03); 
+            border-left: 4px solid var(--primary);
+            transition: transform 0.2s;
+        }
+        
+        .history-title { 
+            font-weight: 700; 
+            color: var(--text-main); 
+            font-size: 14px; 
+            margin-bottom: 4px; 
+            text-transform: uppercase; 
+        }
+
+        .history-body { 
+            font-size: 14px; 
+            color: #3a3a3c; 
+            margin-bottom: 8px; 
+            line-height: 1.4;
+        }
+
+        .history-time { 
+            font-size: 11px; 
+            color: var(--text-secondary); 
+            text-align: right; 
+            font-weight: 500;
+        }
+
+        .empty-history {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 13px;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+        }
     </style>
 </head>
 <body>
-    <h1>Notificaciones de MTTO maquinaria CVB</h1>
+
+    <h1>Notificaciones de MTTO</h1>
+    <p>Maquinaria CVB</p>
     
-    <p id="instruccionesBtn">Presiona el botón para activar las notificaciones:</p>
-    <button id="notifyBtn">Activar Notificaciones</button>
-    <div id="status"></div>
+    <!-- Tarjeta de Control -->
+    <div class="control-card">
+        <p id="instruccionesBtn" style="margin-bottom: 12px; color: var(--text-main);">Activa las alertas para recibir reportes en tiempo real:</p>
+        <button id="notifyBtn">Activar Notificaciones</button>
+        <div id="status"></div>
+        
+        <button id="refreshBtn" class="btn-refrescar">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 2v6h-6"></path>
+                <path d="M3 12a9 9 0 1 0 2.1-5.7L2 9"></path>
+            </svg>
+            Actualizar Historial
+        </button>
+    </div>
 
-    <!-- Nuevo botón de Refrescar con Ícono SVG -->
-    <button id="refreshBtn" class="btn-refrescar">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 2v6h-6"></path>
-            <path d="M3 12a9 9 0 1 0 2.1-5.7L2 9"></path>
-        </svg>
-        Actualizar Historial
-    </button>
-
+    <!-- Sección de Historial -->
     <div id="history-container">
-        <h3>HISTORIAL DE ALERTAS (Solo muestra las ultimas 20)</h3>
+        <h3>Historial de Alertas (Últimas 20)</h3>
         <div id="lista-historial">Cargando historial...</div>
     </div>
 
@@ -71,7 +191,6 @@
         const instrucciones = document.getElementById('instruccionesBtn');
         const refreshBtn = document.getElementById('refreshBtn');
 
-        // Función para recargar la app al presionar el botón
         refreshBtn.addEventListener('click', () => {
             window.location.reload();
         });
@@ -95,8 +214,8 @@
                 if (subscription) {
                     btn.style.display = 'none';
                     instrucciones.style.display = 'none';
-                    statusDiv.style.color = 'green';
-                    statusDiv.textContent = '✅ Dispositivo vinculado recibiendo alertas.';
+                    statusDiv.style.color = '#34c759'; // Verde Apple
+                    statusDiv.textContent = '✅ Dispositivo vinculado y activo';
                 }
             } catch (error) {
                 console.log('Error verificando suscripción:', error);
@@ -128,7 +247,7 @@
                 request.onsuccess = function(event) {
                     const db = event.target.result;
                     if (!db.objectStoreNames.contains('historial')) {
-                        listaDiv.innerHTML = '<p style="color: #778; font-size: 13px;">No hay alertas registradas aún.</p>';
+                        listaDiv.innerHTML = '<div class="empty-history">No hay alertas registradas aún.</div>';
                         return;
                     }
 
@@ -139,7 +258,7 @@
                     getAllRequest.onsuccess = function() {
                         const registros = getAllRequest.result;
                         if (registros.length === 0) {
-                            listaDiv.innerHTML = '<p style="color: #778; font-size: 13px;">No hay alertas registradas aún.</p>';
+                            listaDiv.innerHTML = '<div class="empty-history">No hay alertas registradas aún.</div>';
                             return;
                         }
 
@@ -169,7 +288,7 @@
             }
 
             try {
-                statusDiv.style.color = '#333';
+                statusDiv.style.color = 'var(--text-main)';
                 statusDiv.textContent = 'Solicitando permisos...';
                 
                 const permission = await Notification.requestPermission();
@@ -197,16 +316,16 @@
                     btn.style.display = 'none';
                     instrucciones.style.display = 'none';
                     
-                    statusDiv.style.color = 'green';
-                    statusDiv.textContent = '✅ Dispositivo vinculado recibiendo alertas.';
+                    statusDiv.style.color = '#34c759';
+                    statusDiv.textContent = '✅ Dispositivo vinculado y activo';
                     
                     cargarHistorial(); 
                 } else {
-                    statusDiv.style.color = 'red';
+                    statusDiv.style.color = '#ff3b30';
                     statusDiv.textContent = 'Permisos de notificación denegados.';
                 }
             } catch (error) {
-                statusDiv.style.color = 'red';
+                statusDiv.style.color = '#ff3b30';
                 statusDiv.textContent = 'Error: ' + error.message;
             }
         });

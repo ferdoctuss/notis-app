@@ -3,26 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App de Notificaciones</title>
+    <title>Notificaciones MTTO</title>
     
     <link rel="apple-touch-icon" href="icono.png">
     <link rel="manifest" href="manifest.json">
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 20px; text-align: center; background: #f4f4f9; color: #333; }
-        button { background: #007aff; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; margin-top: 10px; }
+        button { background: #007aff; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; margin-top: 10px; transition: 0.3s; }
         button:active { background: #0056b3; }
         #status { margin-top: 15px; font-weight: bold; color: #555; word-break: break-all; font-size: 13px; }
         
         #history-container { margin-top: 30px; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto; }
         .history-card { background: white; padding: 12px 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .history-title { font-weight: bold; color: #007aff; font-size: 14px; margin-bottom: 3px; }
+        .history-title { font-weight: bold; color: #007aff; font-size: 14px; margin-bottom: 3px; text-transform: uppercase; }
         .history-body { font-size: 14px; color: #333; margin-bottom: 5px; }
         .history-time { font-size: 11px; color: #888; text-align: right; }
     </style>
 </head>
 <body>
     <h1>Notificaciones de MTTO maquinaria CVB</h1>
-    <p>Presiona el botón para activar las notificaciones:</p>
+    
+    <!-- Le agregamos un ID al texto para poder ocultarlo también -->
+    <p id="instruccionesBtn">Presiona el botón para activar las notificaciones:</p>
     <button id="notifyBtn">Activar Notificaciones</button>
     <div id="status"></div>
 
@@ -34,6 +36,8 @@
     <script>
         const publicVapidKey = 'BN1XBI7tIkwCShqM8pv3-sDzRwODMCFFn4Rtl3yMcPJul8bXx2hZNv7IHnBLceOOfUlEbXXpUPpX9pFIc82Sg2s';
         const statusDiv = document.getElementById('status');
+        const btn = document.getElementById('notifyBtn');
+        const instrucciones = document.getElementById('instruccionesBtn');
 
         function urlBase64ToUint8Array(base64String) {
             const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -46,11 +50,30 @@
             return outputArray;
         }
 
+        // 1. Verificamos silenciosamente si ya hay una suscripción activa
+        async function verificarSuscripcionActiva() {
+            try {
+                const register = await navigator.serviceWorker.ready;
+                const subscription = await register.pushManager.getSubscription();
+                
+                if (subscription) {
+                    // Si ya está suscrito, ocultamos el botón y el texto
+                    btn.style.display = 'none';
+                    instrucciones.style.display = 'none';
+                    statusDiv.style.color = 'green';
+                    statusDiv.textContent = '✅ Dispositivo vinculado recibiendo alertas.';
+                }
+            } catch (error) {
+                console.log('Error verificando suscripción:', error);
+            }
+        }
+
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/notis-app/sw.js?v=6')
+            navigator.serviceWorker.register('/notis-app/sw.js?v=7')
                 .then(() => {
                     console.log('Service Worker registrado correctamente');
                     cargarHistorial();
+                    verificarSuscripcionActiva(); // Ejecutamos la revisión al abrir el app
                 })
                 .catch(err => console.log('Error SW:', err));
         }
@@ -85,14 +108,10 @@
                             return;
                         }
 
-                        // 1. Ordenamos para que las más nuevas queden arriba
                         registros.reverse(); 
-                        
-                        // 2. AQUÍ ESTÁ EL LÍMITE: Cortamos la lista para que solo guarde las primeras 20
                         const ultimas20 = registros.slice(0, 20);
 
                         let html = '';
-                        // 3. Dibujamos solo esas 20 en la pantalla
                         ultimas20.forEach(reg => {
                             html += `
                                 <div class="history-card">
@@ -108,7 +127,6 @@
             } catch(e) {}
         }
 
-        const btn = document.getElementById('notifyBtn');
         btn.addEventListener('click', async () => {
             if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
                 statusDiv.textContent = 'Este navegador no soporta Push Notifications.';
@@ -117,32 +135,36 @@
 
             try {
                 statusDiv.style.color = '#333';
-                statusDiv.textContent = 'Paso 1: Solicitando permisos...';
+                statusDiv.textContent = 'Solicitando permisos...';
                 
                 const permission = await Notification.requestPermission();
                 
                 if (permission === 'granted') {
-                    statusDiv.textContent = 'Paso 2: Permiso OK. Cargando memoria...';
+                    statusDiv.textContent = 'Cargando memoria...';
 
-                    await navigator.serviceWorker.register('/notis-app/sw.js?v=6');
+                    await navigator.serviceWorker.register('/notis-app/sw.js?v=7');
                     const register = await navigator.serviceWorker.ready;
                     
-                    statusDiv.textContent = 'Paso 3: Conectando llaves con Apple...';
+                    statusDiv.textContent = 'Conectando con Apple...';
                     const convertedKey = urlBase64ToUint8Array(publicVapidKey);
                     const subscription = await register.pushManager.subscribe({
                         userVisibleOnly: true,
                         applicationServerKey: convertedKey
                     });
 
-                    statusDiv.textContent = 'Paso 4: Enviando datos a tu Servidor...';
+                    statusDiv.textContent = 'Enviando datos al Servidor...';
                     await fetch('https://notis-server.onrender.com/subscribe', {
                         method: 'POST',
                         body: JSON.stringify(subscription),
                         headers: { 'Content-Type': 'application/json' }
                     });
 
+                    // 2. Si es exitoso, ocultamos los elementos instantáneamente
+                    btn.style.display = 'none';
+                    instrucciones.style.display = 'none';
+                    
                     statusDiv.style.color = 'green';
-                    statusDiv.textContent = '¡Dispositivo suscrito con éxito!';
+                    statusDiv.textContent = '✅ Dispositivo vinculado recibiendo alertas.';
                     
                     cargarHistorial(); 
                 } else {
@@ -151,7 +173,7 @@
                 }
             } catch (error) {
                 statusDiv.style.color = 'red';
-                statusDiv.textContent = 'Error en ' + statusDiv.textContent + ' | ' + error.message;
+                statusDiv.textContent = 'Error: ' + error.message;
             }
         });
     </script>

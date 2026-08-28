@@ -46,11 +46,11 @@
             return outputArray;
         }
 
-        // El "?v=2" obliga al iPhone a descargar el Service Worker limpio y saltarse el caché
+        // Obligamos al iPhone a saltarse el caché fantasma con v=3
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js?v=2')
+            navigator.serviceWorker.register('sw.js?v=3')
                 .then(() => {
-                    console.log('Service Worker registrado');
+                    console.log('Service Worker registrado correctamente');
                     cargarHistorial();
                 })
                 .catch(err => console.log('Error SW:', err));
@@ -87,7 +87,6 @@
                         }
 
                         registros.reverse();
-
                         let html = '';
                         registros.forEach(reg => {
                             html += `
@@ -101,13 +100,7 @@
                         listaDiv.innerHTML = html;
                     };
                 };
-
-                request.onerror = function() {
-                    listaDiv.innerHTML = '<p style="color: red; font-size: 13px;">Error al cargar la base de datos.</p>';
-                };
-            } catch(e) {
-                console.log('Error DB:', e);
-            }
+            } catch(e) {}
         }
 
         const btn = document.getElementById('notifyBtn');
@@ -118,25 +111,25 @@
             }
 
             try {
-                // Feedback inmediato para saber que el botón sí respondió
                 statusDiv.style.color = '#333';
-                statusDiv.textContent = 'Solicitando permisos...';
-
-                // REGLA DE ORO EN IOS: Pedir permiso inmediatamente antes de hacer cualquier otra cosa
+                statusDiv.textContent = 'Paso 1: Solicitando permisos...';
+                
                 const permission = await Notification.requestPermission();
                 
                 if (permission === 'granted') {
-                    statusDiv.textContent = 'Suscribiendo dispositivo...';
+                    statusDiv.textContent = 'Paso 2: Permiso OK. Cargando memoria...';
 
-                    // Esperamos al Service Worker solo si ya nos dieron el permiso
-                    const register = await navigator.serviceWorker.ready;
+                    // AQUÍ ESTÁ LA MAGIA: Forzamos el registro directo en lugar de esperar el limbo de Apple
+                    const register = await navigator.serviceWorker.register('sw.js?v=3');
                     
+                    statusDiv.textContent = 'Paso 3: Conectando llaves con Apple...';
                     const convertedKey = urlBase64ToUint8Array(publicVapidKey);
                     const subscription = await register.pushManager.subscribe({
                         userVisibleOnly: true,
                         applicationServerKey: convertedKey
                     });
 
+                    statusDiv.textContent = 'Paso 4: Enviando datos a tu Servidor...';
                     await fetch('https://notis-server.onrender.com/subscribe', {
                         method: 'POST',
                         body: JSON.stringify(subscription),
@@ -151,7 +144,7 @@
                 }
             } catch (error) {
                 statusDiv.style.color = 'red';
-                statusDiv.textContent = 'Error: ' + error.message;
+                statusDiv.textContent = 'Error en ' + statusDiv.textContent + ' | ' + error.message;
             }
         });
     </script>

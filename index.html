@@ -46,37 +46,69 @@
             return outputArray;
         }
 
+        // El "?v=2" obliga al iPhone a descargar el Service Worker limpio y saltarse el caché
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(() => console.log('Service Worker registrado'))
+            navigator.serviceWorker.register('sw.js?v=2')
+                .then(() => {
+                    console.log('Service Worker registrado');
+                    cargarHistorial();
+                })
                 .catch(err => console.log('Error SW:', err));
         }
 
-        // --- SISTEMA DE HISTORIAL CON LOCALSTORAGE ---
         function cargarHistorial() {
-            const listaDiv = document.getElementById('lista-historial');
-            let historial = JSON.parse(localStorage.getItem('mis_alertas')) || [];
+            try {
+                const listaDiv = document.getElementById('lista-historial');
+                const request = indexedDB.open('NotisAppDB', 1);
 
-            if (historial.length === 0) {
-                listaDiv.innerHTML = '<p style="color: #778; font-size: 13px;">No hay alertas registradas aún.</p>';
-                return;
+                request.onupgradeneeded = function(event) {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('historial')) {
+                        db.createObjectStore('historial', { keyPath: 'id', autoIncrement: true });
+                    }
+                };
+
+                request.onsuccess = function(event) {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('historial')) {
+                        listaDiv.innerHTML = '<p style="color: #778; font-size: 13px;">No hay alertas registradas aún.</p>';
+                        return;
+                    }
+
+                    const transaction = db.transaction('historial', 'readonly');
+                    const store = transaction.objectStore('historial');
+                    const getAllRequest = store.getAll();
+
+                    getAllRequest.onsuccess = function() {
+                        const registros = getAllRequest.result;
+                        if (registros.length === 0) {
+                            listaDiv.innerHTML = '<p style="color: #778; font-size: 13px;">No hay alertas registradas aún.</p>';
+                            return;
+                        }
+
+                        registros.reverse();
+
+                        let html = '';
+                        registros.forEach(reg => {
+                            html += `
+                                <div class="history-card">
+                                    <div class="history-title">${reg.title}</div>
+                                    <div class="history-body">${reg.body}</div>
+                                    <div class="history-time">🕒 ${reg.fecha}</div>
+                                </div>
+                            `;
+                        });
+                        listaDiv.innerHTML = html;
+                    };
+                };
+
+                request.onerror = function() {
+                    listaDiv.innerHTML = '<p style="color: red; font-size: 13px;">Error al cargar la base de datos.</p>';
+                };
+            } catch(e) {
+                console.log('Error DB:', e);
             }
-
-            let html = '';
-            historial.forEach(reg => {
-                html += `
-                    <div class="history-card">
-                        <div class="history-title">${reg.title}</div>
-                        <div class="history-body">${reg.body}</div>
-                        <div class="history-time">🕒 ${reg.fecha}</div>
-                    </div>
-                `;
-            });
-            listaDiv.innerHTML = html;
         }
-
-        // Cargar historial al abrir la app
-        cargarHistorial();
 
         const btn = document.getElementById('notifyBtn');
         btn.addEventListener('click', async () => {
@@ -86,13 +118,19 @@
             }
 
             try {
-                const register = await navigator.serviceWorker.ready;
+                // Feedback inmediato para saber que el botón sí respondió
+                statusDiv.style.color = '#333';
+                statusDiv.textContent = 'Solicitando permisos...';
+
+                // REGLA DE ORO EN IOS: Pedir permiso inmediatamente antes de hacer cualquier otra cosa
                 const permission = await Notification.requestPermission();
                 
                 if (permission === 'granted') {
-                    statusDiv.style.color = '#333';
                     statusDiv.textContent = 'Suscribiendo dispositivo...';
 
+                    // Esperamos al Service Worker solo si ya nos dieron el permiso
+                    const register = await navigator.serviceWorker.ready;
+                    
                     const convertedKey = urlBase64ToUint8Array(publicVapidKey);
                     const subscription = await register.pushManager.subscribe({
                         userVisibleOnly: true,
@@ -104,16 +142,6 @@
                         body: JSON.stringify(subscription),
                         headers: { 'Content-Type': 'application/json' }
                     });
-
-                    // Guardar una alerta de prueba en el historial local al presionar el botón (Opcional, para verificar que pinta)
-                    let historial = JSON.parse(localStorage.getItem('mis_alertas')) || [];
-                    historial.push({
-                        title: 'Sistema',
-                        body: 'Dispositivo vinculado correctamente.',
-                        fecha: new Date().toLocaleString()
-                    });
-                    localStorage.setItem('mis_alertas', JSON.stringify(historial));
-                    cargarHistorial();
 
                     statusDiv.style.color = 'green';
                     statusDiv.textContent = '¡Dispositivo suscrito con éxito!';

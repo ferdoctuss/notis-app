@@ -19,7 +19,6 @@
     <div id="status"></div>
 
     <script>
-        // Llave VAPID P-256 100% válida para iOS
         const publicVapidKey = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuB-5-SqW1v9ceU3dK7kOvdVfc';
         const statusDiv = document.getElementById('status');
 
@@ -55,9 +54,12 @@
                     statusDiv.style.color = '#333';
                     statusDiv.textContent = 'Suscribiendo dispositivo...';
 
+                    const convertedKey = urlBase64ToUint8Array(publicVapidKey);
+                    console.log("Longitud de la llave:", convertedKey.length); // Debe ser 65
+
                     const subscription = await register.pushManager.subscribe({
                         userVisibleOnly: true,
-                        applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+                        applicationServerKey: convertedKey
                     });
 
                     await fetch('https://notis-server.onrender.com/subscribe', {
@@ -70,12 +72,9 @@
 
                     statusDiv.style.color = 'green';
                     statusDiv.textContent = '¡Dispositivo suscrito y conectado con éxito!';
-                } else if (permission === 'denied') {
-                    statusDiv.style.color = 'red';
-                    statusDiv.textContent = 'Permisos denegados en los ajustes del dispositivo.';
                 } else {
-                    statusDiv.style.color = 'orange';
-                    statusDiv.textContent = 'Permisos cerrados sin responder.';
+                    statusDiv.style.color = 'red';
+                    statusDiv.textContent = 'Permisos de notificación denegados.';
                 }
             } catch (error) {
                 statusDiv.style.color = 'red';

@@ -5,26 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>App de Notificaciones</title>
     <link rel="manifest" href="manifest.json">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 20px; text-align: center; background: #f4f4f9; color: #333; }
+        button { background: #007aff; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; margin-top: 20px; }
+        button:active { background: #0056b3; }
+        #status { margin-top: 20px; font-weight: bold; color: #555; }
+    </style>
 </head>
 <body>
     <h1>Bienvenido a tu App</h1>
     <p>Presiona el botón para activar las notificaciones personalizadas:</p>
     <button id="notifyBtn">Activar Notificaciones</button>
+    <div id="status"></div>
 
     <script>
+        const statusDiv = document.getElementById('status');
+
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js')
-                .then(() => console.log('Service Worker registrado con éxito'))
-                .catch(err => console.log('Error al registrar SW:', err));
+                .then(() => console.log('Service Worker registrado'))
+                .catch(err => console.log('Error SW:', err));
         }
 
         const btn = document.getElementById('notifyBtn');
         btn.addEventListener('click', async () => {
-            const permission = await Notification.requestPermission();
-            if (permission === 'granted') {
-                alert('¡Permisos concedidos! Ya puedes recibir notificaciones.');
-            } else {
-                alert('Permisos denegados.');
+            if (!('Notification' in window)) {
+                statusDiv.textContent = 'Este navegador no soporta notificaciones.';
+                return;
+            }
+
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    statusDiv.style.color = 'green';
+                    statusDiv.textContent = '¡Permisos concedidos con éxito!';
+                    new Notification('¡Prueba exitosa!', { body: 'Las notificaciones ya están funcionando en tu app.' });
+                } else if (permission === 'denied') {
+                    statusDiv.style.color = 'red';
+                    statusDiv.textContent = 'Permisos denegados. Ve a los ajustes de tu iPhone para habilitarlos.';
+                } else {
+                    statusDiv.style.color = 'orange';
+                    statusDiv.textContent = 'Permisos cerrados sin responder.';
+                }
+            } catch (error) {
+                statusDiv.style.color = 'red';
+                statusDiv.textContent = 'Error al pedir permisos: ' + error;
             }
         });
     </script>

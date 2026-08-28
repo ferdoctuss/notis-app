@@ -13,7 +13,6 @@
         button:active { background: #0056b3; }
         #status { margin-top: 15px; font-weight: bold; color: #555; word-break: break-all; font-size: 13px; }
         
-        /* Estilos para el Historial */
         #history-container { margin-top: 30px; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto; }
         .history-card { background: white; padding: 12px 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .history-title { font-weight: bold; color: #007aff; font-size: 14px; margin-bottom: 3px; }
@@ -49,57 +48,35 @@
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js')
-                .then(() => {
-                    console.log('Service Worker registrado');
-                    cargarHistorial(); // Cargar historial al abrir la app
-                })
+                .then(() => console.log('Service Worker registrado'))
                 .catch(err => console.log('Error SW:', err));
         }
 
-        // Función para leer el historial de IndexedDB y pintarlo en pantalla
+        // --- SISTEMA DE HISTORIAL CON LOCALSTORAGE ---
         function cargarHistorial() {
             const listaDiv = document.getElementById('lista-historial');
-            const request = indexedDB.open('NotisAppDB', 1);
+            let historial = JSON.parse(localStorage.getItem('mis_alertas')) || [];
 
-            request.onsuccess = function(event) {
-                const db = event.target.result;
-                if (!db.objectStoreNames.contains('historial')) {
-                    listaDiv.innerHTML = '<p style="color: #778; font-size: 13px;">No hay alertas registradas aún.</p>';
-                    return;
-                }
+            if (historial.length === 0) {
+                listaDiv.innerHTML = '<p style="color: #778; font-size: 13px;">No hay alertas registradas aún.</p>';
+                return;
+            }
 
-                const transaction = db.transaction('historial', 'readonly');
-                const store = transaction.objectStore('historial');
-                const getAllRequest = store.getAll();
-
-                getAllRequest.onsuccess = function() {
-                    const registros = getAllRequest.result;
-                    if (registros.length === 0) {
-                        listaDiv.innerHTML = '<p style="color: #778; font-size: 13px;">No hay alertas registradas aún.</p>';
-                        return;
-                    }
-
-                    // Ordenar de más reciente a más antiguo
-                    registros.reverse();
-
-                    let html = '';
-                    registros.forEach(reg => {
-                        html += `
-                            <div class="history-card">
-                                <div class="history-title">${reg.title}</div>
-                                <div class="history-body">${reg.body}</div>
-                                <div class="history-time">🕒 ${reg.fecha}</div>
-                            </div>
-                        `;
-                    });
-                    listaDiv.innerHTML = html;
-                };
-            };
-
-            request.onerror = function() {
-                listaDiv.innerHTML = '<p style="color: red; font-size: 13px;">Error al cargar el historial.</p>';
-            };
+            let html = '';
+            historial.forEach(reg => {
+                html += `
+                    <div class="history-card">
+                        <div class="history-title">${reg.title}</div>
+                        <div class="history-body">${reg.body}</div>
+                        <div class="history-time">🕒 ${reg.fecha}</div>
+                    </div>
+                `;
+            });
+            listaDiv.innerHTML = html;
         }
+
+        // Cargar historial al abrir la app
+        cargarHistorial();
 
         const btn = document.getElementById('notifyBtn');
         btn.addEventListener('click', async () => {
@@ -127,6 +104,16 @@
                         body: JSON.stringify(subscription),
                         headers: { 'Content-Type': 'application/json' }
                     });
+
+                    // Guardar una alerta de prueba en el historial local al presionar el botón (Opcional, para verificar que pinta)
+                    let historial = JSON.parse(localStorage.getItem('mis_alertas')) || [];
+                    historial.push({
+                        title: 'Sistema',
+                        body: 'Dispositivo vinculado correctamente.',
+                        fecha: new Date().toLocaleString()
+                    });
+                    localStorage.setItem('mis_alertas', JSON.stringify(historial));
+                    cargarHistorial();
 
                     statusDiv.style.color = 'green';
                     statusDiv.textContent = '¡Dispositivo suscrito con éxito!';

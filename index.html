@@ -2,284 +2,319 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notificaciones MTTO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Notificaciones MTTO - Consorcio Vial Baas</title>
     
     <link rel="apple-touch-icon" href="icono.png">
+    <link rel="icon" type="image/png" href="icono.png">
     <link rel="manifest" href="manifest.json">
+    
     <style>
         :root {
-            --primary: #0071e3;
-            --primary-active: #0077ed;
-            --bg-color: #f5f5f7;
+            --bg-color: #f4f7f6;
             --card-bg: #ffffff;
-            --text-main: #1d1d1f;
-            --text-secondary: #86868b;
-            --border-radius: 16px;
-            --success: #34c759;
+            --text-color: #333333;
+            --subtext-color: #555555;
+            --border-color: #e0e0e0;
+            --history-bg: #fdfdfd;
+            --item-border: #eee;
         }
 
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, sans-serif; 
-            padding: 24px 16px; 
-            max-width: 480px; 
-            margin: 0 auto; 
-            text-align: center; 
-            background: var(--bg-color); 
-            color: var(--text-main); 
-            -webkit-font-smoothing: antialiased;
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #f1f1f1;
+            --subtext-color: #aaaaaa;
+            --border-color: #333333;
+            --history-bg: #252525;
+            --item-border: #333;
         }
 
-        /* Cabecera estilizada */
-        .app-header {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            background: var(--card-bg);
-            padding: 16px 18px;
-            border-radius: var(--border-radius);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-            margin-bottom: 16px;
-            text-align: left;
-            border: 1px solid rgba(0, 0, 0, 0.02);
-        }
-
-        .app-logo {
-            width: 46px;
-            height: 46px;
-            border-radius: 12px;
-            object-fit: cover;
-            flex-shrink: 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-
-        .app-title-group {
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
             display: flex;
             flex-direction: column;
+            align-items: center;
+            min-height: 90vh;
+            transition: background 0.3s ease, color 0.3s ease;
+            touch-action: manipulation;
+            -webkit-text-size-adjust: 100%;
         }
 
-        h1 {
-            font-size: 18px;
-            font-weight: 700;
-            letter-spacing: -0.4px;
-            margin: 0;
-            color: var(--text-main);
-        }
-
-        .app-subtitle {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin: 3px 0 0 0;
-            font-weight: 400;
-        }
-
-        /* Tarjeta de Control */
-        .control-card {
+        .container {
+            max-width: 480px;
+            width: 100%;
             background: var(--card-bg);
-            padding: 22px;
-            border-radius: var(--border-radius);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-            margin-bottom: 20px;
-            border: 1px solid rgba(0, 0, 0, 0.02);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+            transition: background 0.3s ease;
         }
-
-        /* Botón Estilo Verde para Mostrar la Hoja */
-        .btn-sheet-toggle {
+        
+        /* Encabezado con Logo, Títulos y Configuración */
+        .header-box {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            background: #107c41;
+            position: relative;
+            margin-bottom: 25px;
+            padding-top: 5px;
+        }
+
+        .company-logo {
+            position: absolute;
+            left: 0;
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 2px;
+        }
+
+        .header-titles {
+            text-align: center;
+            width: 100%;
+            padding-left: 50px;
+            padding-right: 40px;
+        }
+
+        .company-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #1a365d;
+            margin: 0;
+            letter-spacing: 0.5px;
+        }
+        [data-theme="dark"] .company-title { color: #90cdf4; }
+
+        .app-subtitle {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--subtext-color);
+            margin: 4px 0 0 0;
+        }
+
+        /* Botón de Ajustes (Engranaje) */
+        .settings-btn {
+            position: absolute;
+            right: 0;
+            top: 5px;
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+        .settings-btn:hover { background: rgba(0,0,0,0.05); }
+
+        .btn {
+            background-color: #007bff;
             color: white;
             border: none;
+            padding: 16px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
             width: 100%;
-            padding: 14px 20px;
+            transition: background 0.2s ease;
+            margin-bottom: 12px;
+        }
+        .btn:hover { background-color: #0056b3; }
+
+        .btn-secondary {
+            background-color: #dc3545;
+            padding: 12px;
+            font-size: 16px;
+        }
+        .btn-secondary:hover { background-color: #c82333; }
+
+        .btn-sheet {
+            background-color: #28a745;
+            padding: 14px;
+            font-size: 16px;
+        }
+        .btn-sheet:hover { background-color: #218838; }
+
+        .btn-refresh {
+            background-color: #6c757d;
+            padding: 12px;
             font-size: 15px;
-            font-weight: 600;
-            border-radius: 12px;
-            cursor: pointer;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 12px rgba(16, 124, 65, 0.25);
-            transition: all 0.2s ease;
+            margin-top: 10px;
         }
-        .btn-sheet-toggle:active {
-            background: #0d6434;
-            transform: scale(0.98);
+        .btn-refresh:hover { background-color: #5a6268; }
+
+        #sheet-screen {
+            display: none;
+            margin-top: 15px;
         }
 
-        /* Contenedor Embebido de la Hoja de Sheets */
-        #sheet-container {
-            display: none; /* Oculto por defecto hasta que presionen el botón */
-            margin-top: 16px;
-            margin-bottom: 16px;
-            border-radius: 12px;
+        /* Contenedor del Iframe */
+        .iframe-wrapper {
+            width: 100%;
+            height: 60vh;
+            border-radius: 8px;
             overflow: hidden;
-            border: 1px solid #e5e5ea;
+            border: 2px solid var(--border-color);
+            margin-bottom: 15px;
             background: #fff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-
-        #sheet-container iframe {
+        iframe {
             width: 100%;
-            height: 400px;
+            height: 100%;
             border: none;
         }
 
-        /* Botón Principal de Notificaciones */
-        button#notifyBtn { 
-            background: var(--primary); 
-            color: white; 
-            border: none; 
-            padding: 14px 24px; 
-            font-size: 15px; 
-            font-weight: 600;
-            border-radius: 12px; 
-            cursor: pointer; 
-            width: 100%;
-            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
-            transition: all 0.2s ease; 
+        /* Estilos del historial local (Alertas) */
+        .history-container {
+            margin-top: 20px;
+            background: var(--history-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: left;
         }
-        button#notifyBtn:active { 
-            background: var(--primary-active); 
-            transform: scale(0.98); 
+        .history-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: var(--text-color);
+            margin-bottom: 10px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
         }
-
-        /* Botón Secundario de Refrescar */
-        .btn-refrescar {
-            background: #f2f2f7;
-            color: var(--primary);
-            border: none;
-            padding: 10px 18px;
+        .history-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+        .history-item {
             font-size: 13px;
-            font-weight: 600;
-            border-radius: 20px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: all 0.2s;
-            margin-top: 14px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--item-border);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
         }
-        .btn-refrescar:active { 
-            background: #e5e5ea; 
-            transform: scale(0.96); 
+        .history-item-title {
+            font-weight: bold;
+            color: var(--text-color);
+            text-transform: uppercase;
+        }
+        .history-item-body {
+            color: var(--subtext-color);
+        }
+        .history-time {
+            color: var(--subtext-color);
+            font-size: 11px;
+            align-self: flex-end;
         }
 
         #status { 
-            margin-top: 14px; 
+            margin-top: 12px; 
             font-weight: 500; 
-            color: var(--text-secondary); 
+            color: var(--subtext-color); 
             word-break: break-all; 
-            font-size: 13px; 
-        }
-        
-        /* Contenedor de Historial */
-        #history-container { 
-            text-align: left; 
-        }
-
-        #history-container h3 {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            letter-spacing: 0.6px;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            padding-left: 4px;
-        }
-
-        .history-card { 
-            background: var(--card-bg); 
-            padding: 16px; 
-            border-radius: var(--border-radius); 
-            margin-bottom: 12px; 
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02); 
-            border-left: 4px solid var(--primary);
-            border-top: 1px solid rgba(0,0,0,0.02);
-            border-right: 1px solid rgba(0,0,0,0.02);
-            border-bottom: 1px solid rgba(0,0,0,0.02);
-        }
-        
-        .history-title { 
-            font-weight: 700; 
-            color: var(--text-main); 
             font-size: 14px; 
-            margin-bottom: 4px; 
-            text-transform: uppercase; 
         }
 
-        .history-body { 
-            font-size: 14px; 
-            color: #48484a; 
-            margin-bottom: 8px; 
-            line-height: 1.4;
+        /* Modal de Configuración */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
         }
-
-        .history-time { 
-            font-size: 11px; 
-            color: var(--text-secondary); 
-            text-align: right; 
-            font-weight: 500;
-        }
-
-        .empty-history {
+        .modal-content {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            padding: 25px;
+            border-radius: 12px;
+            width: 85%;
+            max-width: 320px;
             text-align: center;
-            color: var(--text-secondary);
-            font-size: 13px;
-            padding: 24px;
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
+        .modal-content h3 { margin-top: 0; color: #007bff; }
+        .modal-btn {
+            background-color: #f1f1f1;
+            color: #333;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        .modal-btn:hover { background-color: #e0e0e0; }
+        [data-theme="dark"] .modal-btn { background-color: #333; color: #fff; }
+        [data-theme="dark"] .modal-btn:hover { background-color: #444; }
     </style>
 </head>
-<body>
+<body data-theme="light">
 
-    <!-- Cabecera Integrada con el Icono -->
-    <div class="app-header">
-        <img src="icono.png" alt="Logo" class="app-logo">
-        <div class="app-title-group">
-            <h1>Notificaciones MTTO</h1>
-            <p class="app-subtitle">Maquinaria CVB</p>
+    <div class="container">
+        <!-- Encabezado unificado -->
+        <div class="header-box">
+            <img src="icono.png" alt="Logo" class="company-logo">
+            <div class="header-titles">
+                <h1 class="company-title">CONSORCIO VIAL BAAS</h1>
+                <p class="app-subtitle">Notificaciones MTTO</p>
+            </div>
+            <button class="settings-btn" onclick="abrirConfiguracion()" title="Configuración">⚙️</button>
         </div>
-    </div>
-    
-    <!-- Tarjeta de Control -->
-    <div class="control-card">
-        <!-- Botón para mostrar/ocultar la hoja en la app -->
-        <button id="toggleSheetBtn" class="btn-sheet-toggle">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="8" y1="13" x2="16" y2="13"></line>
-                <line x1="8" y1="17" x2="16" y2="17"></line>
-            </svg>
-            VER EXCABADORA 1 336 D2L
-        </button>
-
-        <!-- Cuadro interno donde cargará la hoja de Google Sheets -->
-        <div id="sheet-container">
-            <iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/edit?gid=700898144&embedded=true#gid=700898144"></iframe>
-        </div>
-
-        <p id="instruccionesBtn" style="margin-bottom: 12px; color: var(--text-main); font-size: 14px;">Activa las alertas para recibir reportes en tiempo real:</p>
-        <button id="notifyBtn">Activar Notificaciones</button>
-        <div id="status"></div>
         
-        <button id="refreshBtn" class="btn-refrescar">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 2v6h-6"></path>
-                <path d="M3 12a9 9 0 1 0 2.1-5.7L2 9"></path>
-            </svg>
-            Actualizar Historial
-        </button>
+        <!-- Pantalla de Inicio -->
+        <div id="home-screen">
+            <button class="btn btn-sheet" onclick="mostrarHojaSheets()">📊 Ver Excavadora 1 (336 D2L)</button>
+            
+            <p id="instruccionesBtn" style="margin: 15px 0 10px 0; font-weight: 600; font-size: 14px;">Estado del sistema de alertas:</p>
+            <button id="notifyBtn" class="btn">🔔 Activar Notificaciones</button>
+            <div id="status"></div>
+
+            <div class="history-container">
+                <div class="history-title">⏱️ Historial de Alertas</div>
+                <div id="lista-historial"><ul class="history-list"><li style="color:#999; text-align:center; padding: 10px;">Cargando historial...</li></ul></div>
+            </div>
+        </div>
+
+        <!-- Pantalla de Google Sheets Integrada -->
+        <div id="sheet-screen">
+            <div class="iframe-wrapper">
+                <iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=700898144&widget=false&chrome=false" title="Excavadora 1 336 D2L"></iframe>
+            </div>
+            <button class="btn btn-secondary" onclick="ocultarHojaSheets()">Volver al Inicio</button>
+        </div>
+        
     </div>
 
-    <!-- Sección de Historial -->
-    <div id="history-container">
-        <h3>Historial de Alertas (Últimas 20)</h3>
-        <div id="lista-historial">Cargando historial...</div>
+    <!-- Modal de Configuración -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <h3>⚙️ Configuración</h3>
+            <button class="modal-btn" id="btnThemeToggle" onclick="alternarModoOscuro()">🌙 Cambiar a Modo Oscuro</button>
+            <button class="modal-btn" onclick="verInfoApp()">ℹ️ Info de la app</button>
+            <button class="modal-btn" style="background-color: #dc3545; color: white;" onclick="cerrarConfiguracion()">Cerrar</button>
+        </div>
     </div>
 
     <script>
@@ -287,37 +322,53 @@
         const statusDiv = document.getElementById('status');
         const btn = document.getElementById('notifyBtn');
         const instrucciones = document.getElementById('instruccionesBtn');
-        const refreshBtn = document.getElementById('refreshBtn');
-        
-        const toggleSheetBtn = document.getElementById('toggleSheetBtn');
-        const sheetContainer = document.getElementById('sheet-container');
 
-        // Lógica para alternar la visibilidad de la hoja dentro de la app
-        toggleSheetBtn.addEventListener('click', () => {
-            if (sheetContainer.style.display === 'block') {
-                sheetContainer.style.display = 'none';
-                toggleSheetBtn.innerHTML = `
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="8" y1="13" x2="16" y2="13"></line>
-                        <line x1="8" y1="17" x2="16" y2="17"></line>
-                    </svg>
-                    VER EXCABADORA 1 336 D2L`;
+        // Cargar tema guardado al iniciar
+        window.onload = function() {
+            cargarHistorialIndexedDB();
+            const savedTheme = localStorage.getItem('theme_mode') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+            actualizarTextoBotonTema(savedTheme);
+        };
+
+        function mostrarHojaSheets() {
+            document.getElementById("home-screen").style.display = "none";
+            document.getElementById("sheet-screen").style.display = "block";
+        }
+
+        function ocultarHojaSheets() {
+            document.getElementById("sheet-screen").style.display = "none";
+            document.getElementById("home-screen").style.display = "block";
+        }
+
+        function abrirConfiguracion() {
+            document.getElementById("settingsModal").style.display = "flex";
+        }
+
+        function cerrarConfiguracion() {
+            document.getElementById("settingsModal").style.display = "none";
+        }
+
+        function actualizarTextoBotonTema(theme) {
+            const btnTheme = document.getElementById("btnThemeToggle");
+            if (theme === 'dark') {
+                btnTheme.innerText = "☀️ Cambiar a Modo Claro";
             } else {
-                sheetContainer.style.display = 'block';
-                toggleSheetBtn.innerHTML = `
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                    OCULTAR HOJA`;
+                btnTheme.innerText = "🌙 Cambiar a Modo Oscuro";
             }
-        });
+        }
 
-        refreshBtn.addEventListener('click', () => {
-            window.location.reload();
-        });
+        function alternarModoOscuro() {
+            const currentTheme = document.body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme_mode', newTheme);
+            actualizarTextoBotonTema(newTheme);
+        }
+
+        function verInfoApp() {
+            alert("App de Notificaciones MTTO - Consorcio Vial Baas");
+        }
 
         function urlBase64ToUint8Array(base64String) {
             const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -337,8 +388,8 @@
                 
                 if (subscription) {
                     btn.style.display = 'none';
-                    instrucciones.style.display = 'none';
-                    statusDiv.style.color = '#34c759'; 
+                    if(instrucciones) instrucciones.style.display = 'none';
+                    statusDiv.style.color = '#28a745'; 
                     statusDiv.textContent = '✅ Dispositivo vinculado y activo';
                 }
             } catch (error) {
@@ -350,13 +401,12 @@
             navigator.serviceWorker.register('/notis-app/sw.js?v=7')
                 .then(() => {
                     console.log('Service Worker registrado');
-                    cargarHistorial();
                     verificarSuscripcionActiva(); 
                 })
                 .catch(err => console.log('Error SW:', err));
         }
 
-        function cargarHistorial() {
+        function cargarHistorialIndexedDB() {
             try {
                 const listaDiv = document.getElementById('lista-historial');
                 const request = indexedDB.open('NotisAppDB', 1);
@@ -371,7 +421,7 @@
                 request.onsuccess = function(event) {
                     const db = event.target.result;
                     if (!db.objectStoreNames.contains('historial')) {
-                        listaDiv.innerHTML = '<div class="empty-history">No hay alertas registradas aún.</div>';
+                        listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--subtext-color); align-items:center;">No hay alertas registradas aún.</li></ul>';
                         return;
                     }
 
@@ -382,23 +432,24 @@
                     getAllRequest.onsuccess = function() {
                         const registros = getAllRequest.result;
                         if (registros.length === 0) {
-                            listaDiv.innerHTML = '<div class="empty-history">No hay alertas registradas aún.</div>';
+                            listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--subtext-color); align-items:center;">No hay alertas registradas aún.</li></ul>';
                             return;
                         }
 
                         registros.reverse(); 
                         const ultimas20 = registros.slice(0, 20);
 
-                        let html = '';
+                        let html = '<ul class="history-list">';
                         ultimas20.forEach(reg => {
                             html += `
-                                <div class="history-card">
-                                    <div class="history-title">${reg.title}</div>
-                                    <div class="history-body">${reg.body}</div>
-                                    <div class="history-time">🕒 ${reg.fecha}</div>
-                                </div>
+                                <li class="history-item">
+                                    <span class="history-item-title">${reg.title}</span>
+                                    <span class="history-item-body">${reg.body}</span>
+                                    <span class="history-time">🕒 ${reg.fecha}</span>
+                                </li>
                             `;
                         });
+                        html += '</ul>';
                         listaDiv.innerHTML = html;
                     };
                 };
@@ -412,7 +463,7 @@
             }
 
             try {
-                statusDiv.style.color = 'var(--text-main)';
+                statusDiv.style.color = 'var(--text-color)';
                 statusDiv.textContent = 'Solicitando permisos...';
                 
                 const permission = await Notification.requestPermission();
@@ -423,10 +474,10 @@
                     await navigator.serviceWorker.register('/notis-app/sw.js?v=7');
                     const register = await navigator.serviceWorker.ready;
                     
-                    statusDiv.textContent = 'Conectando con Apple...';
+                    statusDiv.textContent = 'Conectando dispositivo...';
                     const convertedKey = urlBase64ToUint8Array(publicVapidKey);
                     const subscription = await register.pushManager.subscribe({
-                        userValueOnly: true,
+                        userVisibleOnly: true,
                         applicationServerKey: convertedKey
                     });
 
@@ -438,18 +489,18 @@
                     });
 
                     btn.style.display = 'none';
-                    instrucciones.style.display = 'none';
+                    if(instrucciones) instrucciones.style.display = 'none';
                     
-                    statusDiv.style.color = '#34c759';
+                    statusDiv.style.color = '#28a745';
                     statusDiv.textContent = '✅ Dispositivo vinculado y activo';
                     
-                    cargarHistorial(); 
+                    cargarHistorialIndexedDB(); 
                 } else {
-                    statusDiv.style.color = '#ff3b30';
+                    statusDiv.style.color = '#dc3545';
                     statusDiv.textContent = 'Permisos de notificación denegados.';
                 }
             } catch (error) {
-                statusDiv.style.color = '#ff3b30';
+                statusDiv.style.color = '#dc3545';
                 statusDiv.textContent = 'Error: ' + error.message;
             }
         });

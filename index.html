@@ -121,14 +121,14 @@
             background-color: #007bff;
             color: white;
             border: none;
-            padding: 16px 24px;
-            font-size: 16px;
+            padding: 14px 20px;
+            font-size: 15px;
             font-weight: bold;
             border-radius: 8px;
             cursor: pointer;
             width: 100%;
             transition: background 0.2s ease;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
         .btn:hover { background-color: #0056b3; }
 
@@ -141,24 +141,10 @@
 
         .btn-sheet {
             background-color: #28a745;
-            padding: 14px;
-            font-size: 15px;
         }
         .btn-sheet:hover { background-color: #218838; }
 
-        .sheet-section-title {
-            font-size: 13px;
-            font-weight: bold;
-            color: var(--subtext-color);
-            text-transform: uppercase;
-            margin: 18px 0 10px 0;
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 4px;
-            text-align: left;
-        }
-
-        .sheet-screen {
+        .sheet-section {
             display: none;
             margin-top: 15px;
         }
@@ -289,14 +275,12 @@
         
         <!-- Pantalla de Inicio -->
         <div id="home-screen">
-            <div class="sheet-section-title">📊 Control de Hojas de Maquinaria</div>
+            <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-1')">📊 Excavadora 1 (336 D2L)</button>
+            <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-2')">📊 Excavadora 2 (320)</button>
+            <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-3')">📊 Excavadora 3 (336 DL)</button>
+            <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-4')">📊 Excavadora 4 (PC210 K)</button>
             
-            <button class="btn btn-sheet" onclick="mostrarHoja('sheet-1')">📊 Excavadora 1 (336 D2L)</button>
-            <button class="btn btn-sheet" onclick="mostrarHoja('sheet-2')">📊 Excavadora 3 (336 DL)</button>
-            <button class="btn btn-sheet" onclick="mostrarHoja('sheet-3')">📊 Excavadora 4 (PC210 K) - Hoja 1</button>
-            <button class="btn btn-sheet" onclick="mostrarHoja('sheet-4')">📊 Excavadora 4 (PC210 K) - Hoja 2</button>
-            
-            <p id="instruccionesBtn" style="margin: 20px 0 10px 0; font-weight: 600; font-size: 14px;">Estado del sistema de alertas:</p>
+            <p id="instruccionesBtn" style="margin: 15px 0 10px 0; font-weight: 600; font-size: 14px;">Estado del sistema de alertas:</p>
             <button id="notifyBtn" class="btn">🔔 Activar Notificaciones</button>
             <div id="status"></div>
 
@@ -306,37 +290,33 @@
             </div>
         </div>
 
-        <!-- Pantallas de Google Sheets Integradas Individuales -->
-        <div id="sheet-1" class="sheet-screen">
-            <div class="sheet-section-title" style="margin-top:0;">Excavadora 1 (336 D2L)</div>
+        <!-- Secciones de las Hojas de Sheets (Integradas) -->
+        <div id="sheet-1" class="sheet-section">
             <div class="iframe-wrapper">
-                <iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=700898144&widget=false&chrome=false" title="Excavadora 1"></iframe>
+                <iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=700898144&widget=false&chrome=false" title="Excavadora 1 336 D2L"></iframe>
             </div>
-            <button class="btn btn-secondary" onclick="ocultarHoja('sheet-1')">Volver al Inicio</button>
+            <button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button>
         </div>
 
-        <div id="sheet-2" class="sheet-screen">
-            <div class="sheet-section-title" style="margin-top:0;">Excavadora 3 (336 DL)</div>
+        <div id="sheet-2" class="sheet-section">
             <div class="iframe-wrapper">
-                <iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=271220595&widget=false&chrome=false" title="Excavadora 3"></iframe>
+                <iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=387446334&widget=false&chrome=false" title="Excavadora 2 320"></iframe>
             </div>
-            <button class="btn btn-secondary" onclick="ocultarHoja('sheet-2')">Volver al Inicio</button>
+            <button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button>
         </div>
 
-        <div id="sheet-3" class="sheet-screen">
-            <div class="sheet-section-title" style="margin-top:0;">Excavadora 4 (PC210 K) - Opción A</div>
+        <div id="sheet-3" class="sheet-section">
             <div class="iframe-wrapper">
-                <iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=387446334&widget=false&chrome=false" title="Excavadora 4 - 1"></iframe>
+                <iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=271220595&widget=false&chrome=false" title="Excavadora 3 336 DL"></iframe>
             </div>
-            <button class="btn btn-secondary" onclick="ocultarHoja('sheet-3')">Volver al Inicio</button>
+            <button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button>
         </div>
 
-        <div id="sheet-4" class="sheet-screen">
-            <div class="sheet-section-title" style="margin-top:0;">Excavadora 4 (PC210 K) - Opción B</div>
+        <div id="sheet-4" class="sheet-section">
             <div class="iframe-wrapper">
-                <iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1449285887&widget=false&chrome=false" title="Excavadora 4 - 2"></iframe>
+                <iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1449285887&widget=false&chrome=false" title="Excavadora 4 PC210 K"></iframe>
             </div>
-            <button class="btn btn-secondary" onclick="ocultarHoja('sheet-4')">Volver al Inicio</button>
+            <button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button>
         </div>
         
     </div>
@@ -364,13 +344,14 @@
             actualizarTextoBotonTema(savedTheme);
         };
 
-        function mostrarHoja(sheetId) {
+        function mostrarSeccion(idSeccion) {
             document.getElementById("home-screen").style.display = "none";
-            document.getElementById(sheetId).style.display = "block";
+            document.querySelectorAll('.sheet-section').forEach(el => el.style.display = "none");
+            document.getElementById(idSeccion).style.display = "block";
         }
 
-        function ocultarHoja(sheetId) {
-            document.getElementById(sheetId).style.display = "none";
+        function volverInicio() {
+            document.querySelectorAll('.sheet-section').forEach(el => el.style.display = "none");
             document.getElementById("home-screen").style.display = "block";
         }
 

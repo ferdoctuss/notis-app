@@ -183,7 +183,7 @@
 
         .sheet-section { display: none; margin-top: 5px; }
 
-        /* ======== NUEVO SISTEMA DE CARGA (SPINNER) ======== */
+        /* ======== OPTIMIZACIÓN DE SPINNER Y VISOR ======== */
         .iframe-wrapper {
             position: relative;
             width: 100%;
@@ -192,7 +192,7 @@
             overflow: hidden;
             border: 1px solid var(--border-color);
             margin-bottom: 12px;
-            background: var(--bg-color);
+            background: var(--bg-color); /* Fondo gris de espera */
         }
         .loader-box {
             position: absolute;
@@ -223,8 +223,10 @@
             width: 100%; 
             height: 100%; 
             border: none; 
-            background: transparent; 
-            z-index: 2; /* Se pinta por encima del spinner solo cuando termina de cargar */
+            background: #fff; 
+            z-index: 2; 
+            opacity: 0; /* Inicia invisible para que se vea el spinner */
+            transition: opacity 0.3s ease; /* Aparece suavemente */
         }
         /* =================================================== */
 
@@ -349,23 +351,23 @@
             </div>
         </div>
 
-        <!-- Visores Sheets con Animación de Carga -->
-        <div id="sheet-1" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=700898144&widget=false&chrome=false" onload="this.previousElementSibling.style.display='none'"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-2" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=387446334&widget=false&chrome=false" onload="this.previousElementSibling.style.display='none'"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-3" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=271220595&widget=false&chrome=false" onload="this.previousElementSibling.style.display='none'"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-4" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1449285887&widget=false&chrome=false" onload="this.previousElementSibling.style.display='none'"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-5" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=2036388488&widget=false&chrome=false" onload="this.previousElementSibling.style.display='none'"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-6" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=302364632&widget=false&chrome=false" onload="this.previousElementSibling.style.display='none'"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-7" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1033787954&widget=false&chrome=false" onload="this.previousElementSibling.style.display='none'"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-8" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1368905167&widget=false&chrome=false" onload="this.previousElementSibling.style.display='none'"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-9" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=586519024&widget=false&chrome=false" onload="this.previousElementSibling.style.display='none'"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-10" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1909670509&widget=false&chrome=false" onload="this.previousElementSibling.style.display='none'"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-11" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=988010162&widget=false&chrome=false" onload="this.previousElementSibling.style.display='none'"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-12" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=143402892&widget=false&chrome=false" onload="this.previousElementSibling.style.display='none'"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-13" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=129505195&widget=false&chrome=false" onload="this.previousElementSibling.style.display='none'"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-14" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1927174086&widget=false&chrome=false" onload="this.previousElementSibling.style.display='none'"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-15" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=2073162937&widget=false&chrome=false" onload="this.previousElementSibling.style.display='none'"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-16" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1082000321&widget=false&chrome=false" onload="this.previousElementSibling.style.display='none'"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <!-- Visores Sheets Estructurados -->
+        <div id="sheet-1" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=700898144&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-2" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=387446334&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-3" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=271220595&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-4" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1449285887&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-5" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=2036388488&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-6" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=302364632&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-7" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1033787954&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-8" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1368905167&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-9" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=586519024&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-10" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1909670509&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-11" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=988010162&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-12" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=143402892&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-13" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=129505195&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-14" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1927174086&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-15" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=2073162937&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-16" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1082000321&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
     </div>
 
     <!-- Modal Configuración -->
@@ -378,7 +380,7 @@
         </div>
     </div>
 
-    <!-- LÓGICA JAVASCRIPT EUREKA -->
+    <!-- LÓGICA JAVASCRIPT EUREKA + GESTOR DE MEMORIA RAM -->
     <script>
         const publicVapidKey = 'BN1XBI7tIkwCShqM8pv3-sDzRwODMCFFn4Rtl3yMcPJul8bXx2hZNv7IHnBLceOOfUlEbXXpUPpX9pFIc82Sg2s';
         const statusDiv = document.getElementById('status');
@@ -408,6 +410,7 @@
             }
         }
 
+        // MOTOR DE CARGA Y RENDERIZADO VISUAL
         function mostrarSeccion(idSeccion) {
             document.getElementById("home-screen").style.display = "none";
             document.querySelectorAll('.sheet-section').forEach(el => el.style.display = "none");
@@ -415,16 +418,41 @@
             const seccionActiva = document.getElementById(idSeccion);
             seccionActiva.style.display = "block";
 
-            // LAZY LOADING: Descargar la hoja de Google Sheets SOLO cuando se pide
             const iframe = seccionActiva.querySelector('iframe');
-            if (iframe && iframe.hasAttribute('data-src')) {
-                iframe.src = iframe.getAttribute('data-src');
-                iframe.removeAttribute('data-src'); 
+            const loader = seccionActiva.querySelector('.loader-box');
+
+            if (iframe) {
+                // 1. Mostrar el cargador y ocultar el iframe
+                if (loader) loader.style.display = 'flex';
+                iframe.style.opacity = '0';
+                
+                // 2. Evento: Cuando Google manda la señal de "Hoja Lista"
+                iframe.onload = function() {
+                    // Verificamos que sea el link real y no un reseteo de memoria
+                    if (iframe.src && iframe.src.includes('docs.google.com')) {
+                        iframe.style.opacity = '1'; // Aparecer
+                        if (loader) loader.style.display = 'none'; // Ocultar spinner
+                    }
+                };
+
+                // 3. Ejecutar la descarga (Inyectar URL)
+                if (iframe.hasAttribute('data-src')) {
+                    iframe.src = iframe.getAttribute('data-src');
+                }
             }
         }
 
+        // DRENADOR DE MEMORIA (EVITA PANTALLAS BLANCAS)
         function volverInicio() {
-            document.querySelectorAll('.sheet-section').forEach(el => el.style.display = "none");
+            document.querySelectorAll('.sheet-section').forEach(el => {
+                el.style.display = "none";
+                
+                // Matar la pestaña de Google Sheets para liberar RAM
+                const iframe = el.querySelector('iframe');
+                if (iframe) {
+                    iframe.removeAttribute('src'); // Destruye el archivo cacheado pesado
+                }
+            });
             document.getElementById("home-screen").style.display = "block";
         }
 
@@ -473,6 +501,7 @@
             }
         }
 
+        // MOTOR EUREKA - REGISTRO
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/notis-app/sw.js?v=20')
                 .then(() => {
@@ -483,6 +512,7 @@
                 .catch(err => console.log('Error SW:', err));
         }
 
+        // MOTOR EUREKA - LECTURA
         function cargarHistorial() {
             try {
                 const listaDiv = document.getElementById('lista-historial');
@@ -533,6 +563,7 @@
             } catch(e) {}
         }
 
+        // MOTOR EUREKA - PERMISOS
         btn.addEventListener('click', async () => {
             if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
                 statusDiv.textContent = 'Este navegador no soporta Push Notifications.';

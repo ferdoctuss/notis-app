@@ -1,66 +1,55 @@
+const DB_NAME = 'NotisAppDB';
+const STORE_NAME = 'historial';
+
+function guardarEnHistorial(titulo, cuerpo) {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, 1);
+        
+        request.onupgradeneeded = function(event) {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+            }
+        };
+
+        request.onsuccess = function(event) {
+            const db = event.target.result;
+            const transaction = db.transaction(STORE_NAME, 'readwrite');
+            const store = transaction.objectStore(STORE_NAME);
+            
+            const nuevaNotificacion = {
+                title: titulo,
+                body: cuerpo,
+                fecha: new Date().toLocaleString()
+            };
+
+            store.add(nuevaNotificacion);
+            transaction.oncomplete = () => resolve();
+            transaction.onerror = (err) => reject(err);
+        };
+
+        request.onerror = (err) => reject(err);
+    });
+}
+
 self.addEventListener('push', function(event) {
-    if (!event.data) return;
-
-    const data = event.data.json();
-    const ahora = new Date();
-    const fechaStr = ahora.toLocaleDateString() + ' ' + ahora.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-    const alerta = {
-        title: data.title || 'ALERTA MTTO MAQUINARIA',
-        body: data.body || 'Nueva notificación',
-        fecha: fechaStr
-    };
+    const data = event.data ? event.data.json() : {};
+    const title = data.title || 'Alerta';
+    const body = data.body || 'Nuevo mensaje.';
 
     const options = {
-        body: alerta.body,
+        body: body,
         icon: 'icono.png',
         badge: 'icono.png'
     };
 
     event.waitUntil(
         Promise.all([
-            // 1. Mostrar la notificación en el teléfono
-            self.registration.showNotification(alerta.title, options),
-            
-            // 2. Guardar en la base de datos local y cerrar la conexión rápido
-            guardarAlertaEnHistorial(alerta).then(() => {
-                // 3. LA MAGIA: Avisarle directamente a la app abierta para que lo dibuje al instante
-                return self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clients => {
-                    clients.forEach(client => {
-                        client.postMessage({
-                            tipo: 'NUEVA_ALERTA_EN_TIEMPO_REAL',
-                            datos: alerta
-                        });
-                    });
-                });
-            })
+            self.registration.showNotification(title, options),
+            guardarEnHistorial(title, body)
         ])
     );
 });
-
-function guardarAlertaEnHistorial(alerta) {
-    return new Promise((resolve) => {
-        const request = indexedDB.open('NotisAppDB', 1);
-        request.onupgradeneeded = function(e) {
-            const db = e.target.result;
-            if (!db.objectStoreNames.contains('historial')) {
-                db.createObjectStore('historial', { keyPath: 'id', autoIncrement: true });
-            }
-        };
-        request.onsuccess = function(e) {
-            const db = e.target.result;
-            if (db.objectStoreNames.contains('historial')) {
-                const tx = db.transaction('historial', 'readwrite');
-                tx.objectStore('historial').add(alerta);
-                tx.oncomplete = () => { db.close(); resolve(); };
-                tx.onerror = () => { db.close(); resolve(); };
-            } else {
-                db.close(); resolve();
-            }
-        };
-        request.onerror = () => resolve();
-    });
-}
 
 self.addEventListener('notificationclick', function(event) {
     event.notification.close();

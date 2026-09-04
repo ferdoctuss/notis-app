@@ -482,14 +482,17 @@
         const instrucciones = document.getElementById('instruccionesBtn');
 
         window.onload = function() {
-            // Carga instantánea del historial evitando retrasos por caché
-            setTimeout(() => {
-                cargarHistorialIndexedDB();
-            }, 50);
+            // 1. Forzamos la carga del historial inmediatamente
+            cargarHistorialIndexedDB();
 
-            const savedTheme = localStorage.getItem('theme_mode') || 'light';
-            document.body.setAttribute('data-theme', savedTheme);
-            actualizarTextoBotonTema(savedTheme);
+            // 2. Protegemos la carga del tema por si el navegador bloquea el LocalStorage
+            try {
+                const savedTheme = localStorage.getItem('theme_mode') || 'light';
+                document.body.setAttribute('data-theme', savedTheme);
+                actualizarTextoBotonTema(savedTheme);
+            } catch(e) {
+                console.log("No se pudo cargar el tema visual.");
+            }
         };
 
         function recargarApp() {
@@ -520,6 +523,8 @@
         function volverInicio() {
             document.querySelectorAll('.sheet-section').forEach(el => el.style.display = "none");
             document.getElementById("home-screen").style.display = "block";
+            // Recargamos el historial rápido al volver al inicio por si llegó una alerta mientras veías la hoja
+            cargarHistorialIndexedDB();
         }
 
         function abrirConfiguracion() {
@@ -540,11 +545,13 @@
         }
 
         function alternarModoOscuro() {
-            const currentTheme = document.body.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.body.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme_mode', newTheme);
-            actualizarTextoBotonTema(newTheme);
+            try {
+                const currentTheme = document.body.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.body.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme_mode', newTheme);
+                actualizarTextoBotonTema(newTheme);
+            } catch(e) {}
         }
 
         function verInfoApp() {
@@ -573,24 +580,32 @@
                     statusDiv.style.color = 'var(--success)'; 
                     statusDiv.textContent = 'Dispositivo vinculado y activo';
                 }
-            } catch (error) {
-                console.log('Error verificando suscripción:', error);
-            }
+            } catch (error) {}
         }
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/notis-app/sw.js?v=7')
                 .then(() => {
-                    console.log('Service Worker registrado');
                     verificarSuscripcionActiva(); 
                 })
                 .catch(err => console.log('Error SW:', err));
         }
 
+        // VERSIÓN BLINDADA DE LA CARGA DE HISTORIAL
         function cargarHistorialIndexedDB() {
+            const listaDiv = document.getElementById('lista-historial');
+            
             try {
-                const listaDiv = document.getElementById('lista-historial');
+                if (!window.indexedDB) {
+                    listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--subtext-color); text-align:center;">Tu navegador no soporta historial local.</li></ul>';
+                    return;
+                }
+
                 const request = indexedDB.open('NotisAppDB', 1);
+
+                request.onblocked = function() {
+                    listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--danger); text-align:center;">Memoria bloqueada. Cierra otras pestañas y recarga.</li></ul>';
+                };
 
                 request.onupgradeneeded = function(event) {
                     const db = event.target.result;
@@ -601,40 +616,64 @@
 
                 request.onsuccess = function(event) {
                     const db = event.target.result;
+                    
                     if (!db.objectStoreNames.contains('historial')) {
                         listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--subtext-color); text-align:center;">No hay alertas registradas aun.</li></ul>';
+                        db.close(); // Siempre cerrar la conexión
                         return;
                     }
 
-                    const transaction = db.transaction('historial', 'readonly');
-                    const store = transaction.objectStore('historial');
-                    const getAllRequest = store.getAll();
+                    try {
+                        const transaction = db.transaction('historial', 'readonly');
+                        const store = transaction.objectStore('historial');
+                        const getAllRequest = store.getAll();
 
-                    getAllRequest.onsuccess = function() {
-                        const registros = getAllRequest.result;
-                        if (registros.length === 0) {
-                            listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--subtext-color); text-align:center;">No hay alertas registradas aun.</li></ul>';
-                            return;
-                        }
+                        getAllRequest.onsuccess = function() {
+                            const registros = getAllRequest.result;
+                            if (!registros || registros.length === 0) {
+                                listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--subtext-color); text-align:center;">No hay alertas registradas aun.</li></ul>';
+                                db.close();
+                                return;
+                            }
 
-                        registros.reverse(); 
-                        const ultimas20 = registros.slice(0, 20);
+                            registros.reverse(); 
+                            const ultimas20 = registros.slice(0, 20);
 
-                        let html = '<ul class="history-list">';
-                        ultimas20.forEach(reg => {
-                            html += `
-                                <li class="history-item">
-                                    <span class="history-item-title">${reg.title}</span>
-                                    <span class="history-item-body">${reg.body}</span>
-                                    <span class="history-time">${reg.fecha}</span>
-                                </li>
-                            `;
-                        });
-                        html += '</ul>';
-                        listaDiv.innerHTML = html;
-                    };
+                            let html = '<ul class="history-list">';
+                            ultimas20.forEach(reg => {
+                                html += `
+                                    <li class="history-item">
+                                        <span class="history-item-title">${reg.title || 'Alerta'}</span>
+                                        <span class="history-item-body">${reg.body || ''}</span>
+                                        <span class="history-time">${reg.fecha || ''}</span>
+                                    </li>
+                                `;
+                            });
+                            html += '</ul>';
+                            listaDiv.innerHTML = html;
+                        };
+
+                        getAllRequest.onerror = function() {
+                            listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--danger); text-align:center;">Error al leer el historial interno.</li></ul>';
+                        };
+
+                        transaction.oncomplete = function() {
+                            db.close(); // CRUCIAL: Liberar la base de datos
+                        };
+
+                    } catch (e) {
+                        listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--danger); text-align:center;">Error de estructura en el historial.</li></ul>';
+                        db.close();
+                    }
                 };
-            } catch(e) {}
+
+                request.onerror = function(event) {
+                    listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--danger); text-align:center;">Permiso denegado para leer el historial local.</li></ul>';
+                };
+
+            } catch(e) {
+                listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--danger); text-align:center;">Error inesperado de sistema.</li></ul>';
+            }
         }
 
         btn.addEventListener('click', async () => {

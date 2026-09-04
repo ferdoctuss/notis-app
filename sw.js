@@ -17,55 +17,23 @@ self.addEventListener('push', function(event) {
     event.waitUntil(
         Promise.all([
             self.registration.showNotification(title, options),
-            guardarAlertaEnHistorial(title, body, fechaStr)
+            guardarEnCache(title, body, fechaStr)
         ])
     );
 });
 
-function guardarAlertaEnHistorial(title, body, fecha) {
-    return new Promise((resolve, reject) => {
-        const request = indexedDB.open('NotisAppDB', 1);
-
-        request.onupgradeneeded = function(event) {
-            const db = event.target.result;
-            if (!db.objectStoreNames.contains('historial')) {
-                db.createObjectStore('historial', { keyPath: 'id', autoIncrement: true });
-            }
-        };
-
-        request.onsuccess = function(event) {
-            const db = event.target.result;
-            
-            if (!db.objectStoreNames.contains('historial')) {
-                db.close(); // LIBERAR MEMORIA
-                resolve();
-                return;
-            }
-            
-            const transaction = db.transaction('historial', 'readwrite');
-            const store = transaction.objectStore('historial');
-            
-            store.add({
-                title: title,
-                body: body,
-                fecha: fecha
-            });
-
-            transaction.oncomplete = function() {
-                db.close(); // LIBERAR MEMORIA TRAS GUARDAR
-                resolve();
-            };
-            
-            transaction.onerror = function() {
-                db.close(); // LIBERAR MEMORIA SI HAY ERROR
-                reject();
-            };
-        };
-
-        request.onerror = function() {
-            reject();
-        };
-    });
+// Usamos CacheStorage en lugar de IndexedDB para evitar bloqueos en iOS
+async function guardarEnCache(title, body, fecha) {
+    try {
+        const cache = await caches.open('consorcio-vial-historial-v1');
+        const timestamp = Date.now();
+        const payload = JSON.stringify({ title, body, fecha, timestamp });
+        await cache.put('/alerta-' + timestamp, new Response(payload, {
+            headers: { 'Content-Type': 'application/json' }
+        }));
+    } catch (err) {
+        console.error('Error guardando en caché:', err);
+    }
 }
 
 self.addEventListener('notificationclick', function(event) {

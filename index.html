@@ -65,7 +65,6 @@
             box-sizing: border-box;
         }
         
-        /* Encabezado Profesional */
         .header-box {
             display: flex;
             align-items: center;
@@ -132,7 +131,6 @@
         }
         .action-btn:hover { background: var(--border-color); }
 
-        /* Buscador estilizado */
         .search-wrapper {
             position: relative;
             margin-bottom: 12px;
@@ -166,7 +164,6 @@
             pointer-events: none;
         }
 
-        /* Contenedor de maquinaria */
         .machines-container {
             max-height: 250px;
             overflow-y: auto;
@@ -247,7 +244,6 @@
             border: none;
         }
 
-        /* Historial Limpio */
         .history-container {
             margin-top: 14px;
             background: var(--card-bg);
@@ -304,7 +300,6 @@
             font-size: 13px; 
         }
 
-        /* Modal Elegante */
         .modal {
             display: none;
             position: fixed;
@@ -347,7 +342,6 @@
 <body data-theme="light">
 
     <div class="container">
-        <!-- Encabezado con Botón de Recarga y Configuración -->
         <div class="header-box">
             <img src="icono.png" alt="Logo" class="company-logo">
             <div class="header-titles">
@@ -360,14 +354,12 @@
             </div>
         </div>
         
-        <!-- Pantalla de Inicio -->
         <div id="home-screen">
             <div class="search-wrapper">
                 <span class="search-icon">🔍</span>
                 <input type="text" id="searchMachine" class="search-input" placeholder="Buscar equipo o maquinaria..." onkeyup="filtrarMaquinaria()">
             </div>
 
-            <!-- Listado de Maquinaria -->
             <div class="machines-container" id="machinesList">
                 <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-1')">Excavadora 1 (336 D2L)</button>
                 <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-2')">Excavadora 2 (320)</button>
@@ -397,7 +389,6 @@
             </div>
         </div>
 
-        <!-- Secciones de Hojas de Cálculo -->
         <div id="sheet-1" class="sheet-section"><div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=700898144&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
         <div id="sheet-2" class="sheet-section"><div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=387446334&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
         <div id="sheet-3" class="sheet-section"><div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=271220595&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
@@ -416,7 +407,6 @@
         <div id="sheet-16" class="sheet-section"><div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1082000321&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
     </div>
 
-    <!-- Modal de Configuración -->
     <div id="settingsModal" class="modal">
         <div class="modal-content">
             <h3>Configuración</h3>
@@ -433,9 +423,7 @@
         const instrucciones = document.getElementById('instruccionesBtn');
 
         window.onload = function() {
-            setTimeout(() => {
-                cargarHistorialIndexedDB();
-            }, 50);
+            cargarHistorialIndexedDB();
 
             try {
                 const savedTheme = localStorage.getItem('theme_mode') || 'light';
@@ -532,37 +520,35 @@
         }
 
         if ('serviceWorker' in navigator) {
-            // VERSIÓN ACTUALIZADA A v=9 PARA FORZAR LA DESCARGA DEL NUEVO SW.JS
-            navigator.serviceWorker.register('/notis-app/sw.js?v=9')
+            navigator.serviceWorker.register('/notis-app/sw.js?v=10')
                 .then(() => {
                     verificarSuscripcionActiva(); 
                 })
                 .catch(err => console.log('Error SW:', err));
         }
 
+        // CARGA BLINDADA CON LÍMITE DE TIEMPO DE 1.5 SEGUNDOS (ADIÓS A LA ESPERA DE 5 MINUTOS)
         function cargarHistorialIndexedDB() {
             const listaDiv = document.getElementById('lista-historial');
-            let timeoutFired = false;
-            
-            // Temporizador de seguridad: si tarda más de 2.5 segundos, avisa en lugar de congelarse
-            const fallbackTimer = setTimeout(() => {
-                timeoutFired = true;
-                listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--danger); text-align:center;">El sistema está liberando la memoria, recarga en unos segundos...</li></ul>';
-            }, 2500);
+            let finished = false;
+
+            // Si Safari bloquea la base de datos por más de 1.5 segundos, liberamos la UI por la fuerza
+            const safetyTimeout = setTimeout(() => {
+                if (!finished) {
+                    finished = true;
+                    listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--subtext-color); text-align:center;">No hay alertas recientes en caché. (Toca 🔄 si notas retraso)</li></ul>';
+                }
+            }, 1500);
 
             try {
                 if (!window.indexedDB) {
-                    clearTimeout(fallbackTimer);
+                    finished = true;
+                    clearTimeout(safetyTimeout);
                     listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--subtext-color); text-align:center;">Tu navegador no soporta historial local.</li></ul>';
                     return;
                 }
 
                 const request = indexedDB.open('NotisAppDB', 1);
-
-                request.onblocked = function() {
-                    clearTimeout(fallbackTimer);
-                    listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--danger); text-align:center;">Memoria bloqueada. Cierra otras pestañas y recarga.</li></ul>';
-                };
 
                 request.onupgradeneeded = function(event) {
                     const db = event.target.result;
@@ -572,9 +558,10 @@
                 };
 
                 request.onsuccess = function(event) {
-                    if (timeoutFired) return;
-                    clearTimeout(fallbackTimer);
-                    
+                    if (finished) return;
+                    finished = true;
+                    clearTimeout(safetyTimeout);
+
                     const db = event.target.result;
                     
                     if (!db.objectStoreNames.contains('historial')) {
@@ -613,29 +600,29 @@
                             listaDiv.innerHTML = html;
                         };
 
-                        getAllRequest.onerror = function() {
-                            listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--danger); text-align:center;">Error al leer el historial interno.</li></ul>';
-                        };
-
                         transaction.oncomplete = function() {
-                            db.close(); 
+                            db.close();
                         };
 
                     } catch (e) {
-                        listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--danger); text-align:center;">Error de estructura en el historial.</li></ul>';
+                        listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--danger); text-align:center;">Error al procesar el historial.</li></ul>';
                         db.close();
                     }
                 };
 
-                request.onerror = function(event) {
-                    if (timeoutFired) return;
-                    clearTimeout(fallbackTimer);
-                    listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--danger); text-align:center;">Permiso denegado para leer el historial local.</li></ul>';
+                request.onerror = function() {
+                    if (finished) return;
+                    finished = true;
+                    clearTimeout(safetyTimeout);
+                    listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--danger); text-align:center;">Error al abrir la memoria local.</li></ul>';
                 };
 
             } catch(e) {
-                if (!timeoutFired) clearTimeout(fallbackTimer);
-                listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--danger); text-align:center;">Error inesperado de sistema.</li></ul>';
+                if (!finished) {
+                    finished = true;
+                    clearTimeout(safetyTimeout);
+                    listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--danger); text-align:center;">Error general de sistema.</li></ul>';
+                }
             }
         }
 
@@ -654,7 +641,7 @@
                 if (permission === 'granted') {
                     statusDiv.textContent = 'Cargando memoria...';
 
-                    await navigator.serviceWorker.register('/notis-app/sw.js?v=9');
+                    await navigator.serviceWorker.register('/notis-app/sw.js?v=10');
                     const register = await navigator.serviceWorker.ready;
                     
                     statusDiv.textContent = 'Conectando dispositivo...';

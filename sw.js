@@ -1,41 +1,12 @@
-const DB_NAME = 'NotisAppDB';
-const STORE_NAME = 'historial';
-
-function guardarEnHistorial(titulo, cuerpo) {
-    return new Promise((resolve, reject) => {
-        const request = indexedDB.open(DB_NAME, 1);
-        
-        request.onupgradeneeded = function(event) {
-            const db = event.target.result;
-            if (!db.objectStoreNames.contains(STORE_NAME)) {
-                db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
-            }
-        };
-
-        request.onsuccess = function(event) {
-            const db = event.target.result;
-            const transaction = db.transaction(STORE_NAME, 'readwrite');
-            const store = transaction.objectStore(STORE_NAME);
-            
-            const nuevaNotificacion = {
-                title: titulo,
-                body: cuerpo,
-                fecha: new Date().toLocaleString()
-            };
-
-            store.add(nuevaNotificacion);
-            transaction.oncomplete = () => resolve();
-            transaction.onerror = (err) => reject(err);
-        };
-
-        request.onerror = (err) => reject(err);
-    });
-}
-
 self.addEventListener('push', function(event) {
-    const data = event.data ? event.data.json() : {};
-    const title = data.title || 'Alerta';
-    const body = data.body || 'Nuevo mensaje.';
+    if (!event.data) return;
+
+    const data = event.data.json();
+    const title = data.title || 'ALERTA MTTO MAQUINARIA';
+    const body = data.body || 'Nueva notificación recibida';
+    
+    const ahora = new Date();
+    const fechaStr = ahora.toLocaleDateString() + ' ' + ahora.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
     const options = {
         body: body,
@@ -46,7 +17,58 @@ self.addEventListener('push', function(event) {
     event.waitUntil(
         Promise.all([
             self.registration.showNotification(title, options),
-            guardarEnHistorial(title, body)
+            guardarAlertaEnHistorial(title, body, fechaStr)
         ])
     );
+});
+
+function guardarAlertaEnHistorial(title, body, fecha) {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open('NotisAppDB', 1);
+
+        request.onupgradeneeded = function(event) {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains('historial')) {
+                db.createObjectStore('historial', { keyPath: 'id', autoIncrement: true });
+            }
+        };
+
+        request.onsuccess = function(event) {
+            const db = event.target.result;
+            
+            if (!db.objectStoreNames.contains('historial')) {
+                db.close(); // LIBERAR MEMORIA
+                resolve();
+                return;
+            }
+            
+            const transaction = db.transaction('historial', 'readwrite');
+            const store = transaction.objectStore('historial');
+            
+            store.add({
+                title: title,
+                body: body,
+                fecha: fecha
+            });
+
+            transaction.oncomplete = function() {
+                db.close(); // LIBERAR MEMORIA TRAS GUARDAR
+                resolve();
+            };
+            
+            transaction.onerror = function() {
+                db.close(); // LIBERAR MEMORIA SI HAY ERROR
+                reject();
+            };
+        };
+
+        request.onerror = function() {
+            reject();
+        };
+    });
+}
+
+self.addEventListener('notificationclick', function(event) {
+    event.notification.close();
+    event.waitUntil(clients.openWindow('/'));
 });

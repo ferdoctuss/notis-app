@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Notificaciones MTTO - Consorcio Vial Baas</title>
     
+    <!-- ACELERADOR DE CONEXIÓN A GOOGLE -->
+    <link rel="preconnect" href="https://docs.google.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
     <link rel="apple-touch-icon" href="icono.png">
     <link rel="icon" type="image/png" href="icono.png">
     <link rel="manifest" href="manifest.json">
@@ -183,7 +187,6 @@
 
         .sheet-section { display: none; margin-top: 5px; }
 
-        /* ======== OPTIMIZACIÓN DE SPINNER Y VISOR ======== */
         .iframe-wrapper {
             position: relative;
             width: 100%;
@@ -192,7 +195,7 @@
             overflow: hidden;
             border: 1px solid var(--border-color);
             margin-bottom: 12px;
-            background: var(--bg-color); /* Fondo gris de espera */
+            background: var(--bg-color);
         }
         .loader-box {
             position: absolute;
@@ -225,10 +228,9 @@
             border: none; 
             background: #fff; 
             z-index: 2; 
-            opacity: 0; /* Inicia invisible para que se vea el spinner */
-            transition: opacity 0.3s ease; /* Aparece suavemente */
+            opacity: 0; 
+            transition: opacity 0.3s ease; 
         }
-        /* =================================================== */
 
         .history-container {
             margin-top: 14px;
@@ -297,6 +299,13 @@
             width: 100%;
             margin-top: 10px;
         }
+        
+        /* Contenedor de botones duales */
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
     </style>
 </head>
 <body data-theme="light">
@@ -351,23 +360,23 @@
             </div>
         </div>
 
-        <!-- Visores Sheets Estructurados -->
-        <div id="sheet-1" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=700898144&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-2" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=387446334&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-3" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=271220595&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-4" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1449285887&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-5" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=2036388488&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-6" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=302364632&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-7" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1033787954&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-8" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1368905167&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-9" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=586519024&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-10" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1909670509&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-11" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=988010162&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-12" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=143402892&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-13" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=129505195&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-14" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1927174086&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-15" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=2073162937&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
-        <div id="sheet-16" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1082000321&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <!-- Visores Sheets con Botón Dual -->
+        <div id="sheet-1" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=700898144&widget=false&chrome=false"></iframe></div><div class="btn-group"><button class="btn btn-secondary" onclick="volverInicio()">Volver</button><button class="btn" onclick="abrirEnApp('sheet-1')">Abrir en App</button></div></div>
+        <div id="sheet-2" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=387446334&widget=false&chrome=false"></iframe></div><div class="btn-group"><button class="btn btn-secondary" onclick="volverInicio()">Volver</button><button class="btn" onclick="abrirEnApp('sheet-2')">Abrir en App</button></div></div>
+        <div id="sheet-3" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=271220595&widget=false&chrome=false"></iframe></div><div class="btn-group"><button class="btn btn-secondary" onclick="volverInicio()">Volver</button><button class="btn" onclick="abrirEnApp('sheet-3')">Abrir en App</button></div></div>
+        <div id="sheet-4" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1449285887&widget=false&chrome=false"></iframe></div><div class="btn-group"><button class="btn btn-secondary" onclick="volverInicio()">Volver</button><button class="btn" onclick="abrirEnApp('sheet-4')">Abrir en App</button></div></div>
+        <div id="sheet-5" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=2036388488&widget=false&chrome=false"></iframe></div><div class="btn-group"><button class="btn btn-secondary" onclick="volverInicio()">Volver</button><button class="btn" onclick="abrirEnApp('sheet-5')">Abrir en App</button></div></div>
+        <div id="sheet-6" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=302364632&widget=false&chrome=false"></iframe></div><div class="btn-group"><button class="btn btn-secondary" onclick="volverInicio()">Volver</button><button class="btn" onclick="abrirEnApp('sheet-6')">Abrir en App</button></div></div>
+        <div id="sheet-7" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1033787954&widget=false&chrome=false"></iframe></div><div class="btn-group"><button class="btn btn-secondary" onclick="volverInicio()">Volver</button><button class="btn" onclick="abrirEnApp('sheet-7')">Abrir en App</button></div></div>
+        <div id="sheet-8" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1368905167&widget=false&chrome=false"></iframe></div><div class="btn-group"><button class="btn btn-secondary" onclick="volverInicio()">Volver</button><button class="btn" onclick="abrirEnApp('sheet-8')">Abrir en App</button></div></div>
+        <div id="sheet-9" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=586519024&widget=false&chrome=false"></iframe></div><div class="btn-group"><button class="btn btn-secondary" onclick="volverInicio()">Volver</button><button class="btn" onclick="abrirEnApp('sheet-9')">Abrir en App</button></div></div>
+        <div id="sheet-10" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1909670509&widget=false&chrome=false"></iframe></div><div class="btn-group"><button class="btn btn-secondary" onclick="volverInicio()">Volver</button><button class="btn" onclick="abrirEnApp('sheet-10')">Abrir en App</button></div></div>
+        <div id="sheet-11" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=988010162&widget=false&chrome=false"></iframe></div><div class="btn-group"><button class="btn btn-secondary" onclick="volverInicio()">Volver</button><button class="btn" onclick="abrirEnApp('sheet-11')">Abrir en App</button></div></div>
+        <div id="sheet-12" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=143402892&widget=false&chrome=false"></iframe></div><div class="btn-group"><button class="btn btn-secondary" onclick="volverInicio()">Volver</button><button class="btn" onclick="abrirEnApp('sheet-12')">Abrir en App</button></div></div>
+        <div id="sheet-13" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=129505195&widget=false&chrome=false"></iframe></div><div class="btn-group"><button class="btn btn-secondary" onclick="volverInicio()">Volver</button><button class="btn" onclick="abrirEnApp('sheet-13')">Abrir en App</button></div></div>
+        <div id="sheet-14" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1927174086&widget=false&chrome=false"></iframe></div><div class="btn-group"><button class="btn btn-secondary" onclick="volverInicio()">Volver</button><button class="btn" onclick="abrirEnApp('sheet-14')">Abrir en App</button></div></div>
+        <div id="sheet-15" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=2073162937&widget=false&chrome=false"></iframe></div><div class="btn-group"><button class="btn btn-secondary" onclick="volverInicio()">Volver</button><button class="btn" onclick="abrirEnApp('sheet-15')">Abrir en App</button></div></div>
+        <div id="sheet-16" class="sheet-section"><div class="iframe-wrapper"><div class="loader-box"><div class="spinner"></div> Cargando documento...</div><iframe data-src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1082000321&widget=false&chrome=false"></iframe></div><div class="btn-group"><button class="btn btn-secondary" onclick="volverInicio()">Volver</button><button class="btn" onclick="abrirEnApp('sheet-16')">Abrir en App</button></div></div>
     </div>
 
     <!-- Modal Configuración -->
@@ -380,7 +389,7 @@
         </div>
     </div>
 
-    <!-- LÓGICA JAVASCRIPT EUREKA + GESTOR DE MEMORIA RAM -->
+    <!-- LÓGICA JAVASCRIPT EUREKA -->
     <script>
         const publicVapidKey = 'BN1XBI7tIkwCShqM8pv3-sDzRwODMCFFn4Rtl3yMcPJul8bXx2hZNv7IHnBLceOOfUlEbXXpUPpX9pFIc82Sg2s';
         const statusDiv = document.getElementById('status');
@@ -388,9 +397,7 @@
         const instrucciones = document.getElementById('instruccionesBtn');
         const refreshBtn = document.getElementById('refreshBtn');
 
-        refreshBtn.addEventListener('click', () => {
-            window.location.reload();
-        });
+        refreshBtn.addEventListener('click', () => { window.location.reload(); });
 
         window.onload = function() {
             try {
@@ -410,7 +417,7 @@
             }
         }
 
-        // MOTOR DE CARGA Y RENDERIZADO VISUAL
+        // MOTOR DE CARGA CON SPINNER INTELIGENTE
         function mostrarSeccion(idSeccion) {
             document.getElementById("home-screen").style.display = "none";
             document.querySelectorAll('.sheet-section').forEach(el => el.style.display = "none");
@@ -422,35 +429,42 @@
             const loader = seccionActiva.querySelector('.loader-box');
 
             if (iframe) {
-                // 1. Mostrar el cargador y ocultar el iframe
                 if (loader) loader.style.display = 'flex';
                 iframe.style.opacity = '0';
                 
-                // 2. Evento: Cuando Google manda la señal de "Hoja Lista"
                 iframe.onload = function() {
-                    // Verificamos que sea el link real y no un reseteo de memoria
                     if (iframe.src && iframe.src.includes('docs.google.com')) {
-                        iframe.style.opacity = '1'; // Aparecer
-                        if (loader) loader.style.display = 'none'; // Ocultar spinner
+                        iframe.style.opacity = '1';
+                        if (loader) loader.style.display = 'none';
                     }
                 };
 
-                // 3. Ejecutar la descarga (Inyectar URL)
                 if (iframe.hasAttribute('data-src')) {
                     iframe.src = iframe.getAttribute('data-src');
                 }
             }
         }
 
-        // DRENADOR DE MEMORIA (EVITA PANTALLAS BLANCAS)
+        // LA SALIDA DE ESCAPE: ABRE LA HOJA DIRECTO EN GOOGLE SHEETS
+        function abrirEnApp(idSeccion) {
+            const iframe = document.querySelector('#' + idSeccion + ' iframe');
+            if (iframe) {
+                let url = iframe.src || iframe.getAttribute('data-src');
+                if (url) {
+                    // Limpiamos el link para que el celular lo reconozca y abra la app nativa de Sheets
+                    url = url.replace('/htmlembed?gid=', '/edit?gid=').replace('&widget=false&chrome=false', '');
+                    window.open(url, '_blank');
+                }
+            }
+        }
+
+        // DRENADOR DE MEMORIA RAM
         function volverInicio() {
             document.querySelectorAll('.sheet-section').forEach(el => {
                 el.style.display = "none";
-                
-                // Matar la pestaña de Google Sheets para liberar RAM
                 const iframe = el.querySelector('iframe');
                 if (iframe) {
-                    iframe.removeAttribute('src'); // Destruye el archivo cacheado pesado
+                    iframe.removeAttribute('src'); // Destruye el archivo pesado para evitar pantallas blancas
                 }
             });
             document.getElementById("home-screen").style.display = "block";
@@ -496,23 +510,18 @@
                     statusDiv.style.color = 'var(--success)'; 
                     statusDiv.textContent = '✅ Dispositivo vinculado y activo';
                 }
-            } catch (error) {
-                console.log('Error verificando suscripción:', error);
-            }
+            } catch (error) {}
         }
 
-        // MOTOR EUREKA - REGISTRO
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/notis-app/sw.js?v=20')
                 .then(() => {
-                    console.log('Service Worker registrado EUREKA');
                     cargarHistorial(); 
                     verificarSuscripcionActiva(); 
                 })
                 .catch(err => console.log('Error SW:', err));
         }
 
-        // MOTOR EUREKA - LECTURA
         function cargarHistorial() {
             try {
                 const listaDiv = document.getElementById('lista-historial');
@@ -563,7 +572,6 @@
             } catch(e) {}
         }
 
-        // MOTOR EUREKA - PERMISOS
         btn.addEventListener('click', async () => {
             if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
                 statusDiv.textContent = 'Este navegador no soporta Push Notifications.';

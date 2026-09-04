@@ -59,7 +59,7 @@
         .container {
             max-width: 480px;
             width: 100%;
-            background: transparent; /* Sin caja contenedora para aprovechar espacio */
+            background: transparent;
             padding: 0;
             text-align: center;
             box-sizing: border-box;
@@ -72,8 +72,6 @@
             justify-content: space-between;
             position: relative;
             margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--border-color);
             background: var(--card-bg);
             padding: 12px 14px;
             border-radius: 16px;
@@ -349,7 +347,7 @@
 <body data-theme="light">
 
     <div class="container">
-        <!-- Encabezado con botones actualizados -->
+        <!-- Encabezado con Botón de Recarga y Configuración -->
         <div class="header-box">
             <img src="icono.png" alt="Logo" class="company-logo">
             <div class="header-titles">
@@ -357,14 +355,13 @@
                 <p class="app-subtitle">Seguimiento de Maquinaria</p>
             </div>
             <div class="header-actions">
-                <button class="action-btn" onclick="location.reload()" title="Recargar Web">🔄</button>
+                <button class="action-btn" onclick="recargarApp()" title="Recargar Web">🔄</button>
                 <button class="action-btn" onclick="abrirConfiguracion()" title="Configuración">⚙️</button>
             </div>
         </div>
         
         <!-- Pantalla de Inicio -->
         <div id="home-screen">
-            <!-- Buscador con icono -->
             <div class="search-wrapper">
                 <span class="search-icon">🔍</span>
                 <input type="text" id="searchMachine" class="search-input" placeholder="Buscar equipo o maquinaria..." onkeyup="filtrarMaquinaria()">
@@ -485,11 +482,19 @@
         const instrucciones = document.getElementById('instruccionesBtn');
 
         window.onload = function() {
-            cargarHistorialIndexedDB();
+            // Carga instantánea del historial evitando retrasos por caché
+            setTimeout(() => {
+                cargarHistorialIndexedDB();
+            }, 50);
+
             const savedTheme = localStorage.getItem('theme_mode') || 'light';
             document.body.setAttribute('data-theme', savedTheme);
             actualizarTextoBotonTema(savedTheme);
         };
+
+        function recargarApp() {
+            window.location.href = window.location.pathname + '?v=' + new Date().getTime();
+        }
 
         function filtrarMaquinaria() {
             let input = document.getElementById('searchMachine').value.toLowerCase();
@@ -543,7 +548,7 @@
         }
 
         function verInfoApp() {
-            alert("App de Notificaciones MTTO - Consorcio Vial Baas");
+            alert("App de Seguimiento de Maquinaria MTTO - Consorcio Vial Baas");
         }
 
         function urlBase64ToUint8Array(base64String) {

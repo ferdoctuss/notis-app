@@ -57,13 +57,13 @@
             transition: background 0.3s ease;
         }
         
-        /* Encabezado con Logo, Títulos y Configuración */
+        /* Encabezado */
         .header-box {
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             padding-top: 5px;
         }
 
@@ -102,7 +102,6 @@
             margin: 4px 0 0 0;
         }
 
-        /* Botón de Ajustes (Engranaje) */
         .settings-btn {
             position: absolute;
             right: 0;
@@ -117,30 +116,72 @@
         }
         .settings-btn:hover { background: rgba(0,0,0,0.05); }
 
+        /* Buscador de Maquinaria */
+        .search-input {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+            background: var(--bg-color);
+            color: var(--text-color);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus {
+            border-color: #28a745;
+        }
+
+        /* Contenedor con scroll para los botones de maquinaria */
+        .machines-container {
+            max-height: 240px;
+            overflow-y: auto;
+            padding-right: 4px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px;
+            background: var(--bg-color);
+        }
+
+        .machines-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .machines-container::-webkit-scrollbar-thumb {
+            background-color: var(--border-color);
+            border-radius: 4px;
+        }
+
         .btn {
             background-color: #007bff;
             color: white;
             border: none;
-            padding: 14px 20px;
-            font-size: 15px;
-            font-weight: bold;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 600;
             border-radius: 8px;
             cursor: pointer;
             width: 100%;
-            transition: background 0.2s ease;
-            margin-bottom: 10px;
+            transition: background 0.2s ease, transform 0.1s;
+            margin-bottom: 8px;
+            box-sizing: border-box;
+            text-align: center;
         }
+        .btn:active { transform: scale(0.98); }
         .btn:hover { background-color: #0056b3; }
 
         .btn-secondary {
             background-color: #dc3545;
             padding: 12px;
-            font-size: 16px;
+            font-size: 15px;
         }
         .btn-secondary:hover { background-color: #c82333; }
 
         .btn-sheet {
             background-color: #28a745;
+            margin-bottom: 8px;
         }
         .btn-sheet:hover { background-color: #218838; }
 
@@ -149,7 +190,6 @@
             margin-top: 15px;
         }
 
-        /* Contenedor del Iframe */
         .iframe-wrapper {
             width: 100%;
             height: 60vh;
@@ -165,33 +205,33 @@
             border: none;
         }
 
-        /* Estilos del historial local (Alertas) */
+        /* Historial */
         .history-container {
-            margin-top: 20px;
+            margin-top: 15px;
             background: var(--history-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 15px;
+            padding: 12px;
             text-align: left;
         }
         .history-title {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
             color: var(--text-color);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             border-bottom: 2px solid #007bff;
-            padding-bottom: 5px;
+            padding-bottom: 4px;
         }
         .history-list {
             list-style: none;
             padding: 0;
             margin: 0;
-            max-height: 180px;
+            max-height: 140px;
             overflow-y: auto;
         }
         .history-item {
-            font-size: 13px;
-            padding: 8px 0;
+            font-size: 12px;
+            padding: 6px 0;
             border-bottom: 1px solid var(--item-border);
             display: flex;
             flex-direction: column;
@@ -208,19 +248,19 @@
         }
         .history-time {
             color: var(--subtext-color);
-            font-size: 11px;
+            font-size: 10px;
             align-self: flex-end;
         }
 
         #status { 
-            margin-top: 12px; 
+            margin-top: 10px; 
             font-weight: 500; 
             color: var(--subtext-color); 
             word-break: break-all; 
-            font-size: 14px; 
+            font-size: 13px; 
         }
 
-        /* Modal de Configuración */
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -263,59 +303,113 @@
 <body data-theme="light">
 
     <div class="container">
-        <!-- Encabezado unificado -->
         <div class="header-box">
             <img src="icono.png" alt="Logo" class="company-logo">
             <div class="header-titles">
                 <h1 class="company-title">CONSORCIO VIAL BAAS</h1>
                 <p class="app-subtitle">Notificaciones MTTO</p>
             </div>
-            <button class="settings-btn" onclick="abrirConfiguracion()" title="Configuración">⚙️</button>
+            <button class="settings-btn" onclick="abrirConfiguracion()" title="Configuracion">⚙️</button>
         </div>
         
         <!-- Pantalla de Inicio -->
         <div id="home-screen">
-            <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-1')">📊 Excavadora 1 (336 D2L)</button>
-            <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-2')">📊 Excavadora 2 (320)</button>
-            <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-3')">📊 Excavadora 3 (336 DL)</button>
-            <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-4')">📊 Excavadora 4 (PC210 K)</button>
+            <!-- Barra de búsqueda rápida para filtrar maquinaria -->
+            <input type="text" id="searchMachine" class="search-input" placeholder="Buscar maquinaria..." onkeyup="filtrarMaquinaria()">
+
+            <!-- Contenedor con barra de desplazamiento para mantener orden y limpieza -->
+            <div class="machines-container" id="machinesList">
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-1')">Excavadora 1 (336 D2L)</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-2')">Excavadora 2 (320)</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-3')">Excavadora 3 (336 DL)</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-4')">Excavadora 4 (PC210 K)</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-5')">Cargador F. (CAT)</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-6')">Cargador F. (KOMATSU)</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-7')">Retro Excavadora (John Deere)</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-8')">Retro Excavadora (Cat)</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-9')">Motoniveladora (GD555-5)</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-10')">Rodillo 1 (CS533E CAT)</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-11')">Rodillo 3 (CS533C CAT)</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-12')">Mixer</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-13')">Mini Cargador (Manitou)</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-14')">Rodillo Rolas</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-15')">Rodillo Neumático 3</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-16')">Pavimentadora 3</button>
+            </div>
             
-            <p id="instruccionesBtn" style="margin: 15px 0 10px 0; font-weight: 600; font-size: 14px;">Estado del sistema de alertas:</p>
-            <button id="notifyBtn" class="btn">🔔 Activar Notificaciones</button>
+            <p id="instruccionesBtn" style="margin: 10px 0 8px 0; font-weight: 600; font-size: 13px;">Sistema de alertas:</p>
+            <button id="notifyBtn" class="btn" style="background-color: #007bff;">Activar Notificaciones</button>
             <div id="status"></div>
 
             <div class="history-container">
-                <div class="history-title">⏱️ Historial de Alertas</div>
-                <div id="lista-historial"><ul class="history-list"><li style="color:#999; text-align:center; padding: 10px;">Cargando historial...</li></ul></div>
+                <div class="history-title">Historial de Alertas</div>
+                <div id="lista-historial"><ul class="history-list"><li style="color:#999; text-align:center; padding: 6px;">Cargando historial...</li></ul></div>
             </div>
         </div>
 
-        <!-- Secciones de las Hojas de Sheets (Integradas) -->
+        <!-- Secciones individuales de hojas integradas -->
         <div id="sheet-1" class="sheet-section">
-            <div class="iframe-wrapper">
-                <iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=700898144&widget=false&chrome=false" title="Excavadora 1 336 D2L"></iframe>
-            </div>
+            <div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=700898144&widget=false&chrome=false"></iframe></div>
             <button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button>
         </div>
-
         <div id="sheet-2" class="sheet-section">
-            <div class="iframe-wrapper">
-                <iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=387446334&widget=false&chrome=false" title="Excavadora 2 320"></iframe>
-            </div>
+            <div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=387446334&widget=false&chrome=false"></iframe></div>
             <button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button>
         </div>
-
         <div id="sheet-3" class="sheet-section">
-            <div class="iframe-wrapper">
-                <iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=271220595&widget=false&chrome=false" title="Excavadora 3 336 DL"></iframe>
-            </div>
+            <div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=271220595&widget=false&chrome=false"></iframe></div>
             <button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button>
         </div>
-
         <div id="sheet-4" class="sheet-section">
-            <div class="iframe-wrapper">
-                <iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1449285887&widget=false&chrome=false" title="Excavadora 4 PC210 K"></iframe>
-            </div>
+            <div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1449285887&widget=false&chrome=false"></iframe></div>
+            <button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button>
+        </div>
+        <div id="sheet-5" class="sheet-section">
+            <div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=2036388488&widget=false&chrome=false"></iframe></div>
+            <button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button>
+        </div>
+        <div id="sheet-6" class="sheet-section">
+            <div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=302364632&widget=false&chrome=false"></iframe></div>
+            <button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button>
+        </div>
+        <div id="sheet-7" class="sheet-section">
+            <div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1033787954&widget=false&chrome=false"></iframe></div>
+            <button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button>
+        </div>
+        <div id="sheet-8" class="sheet-section">
+            <div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1368905167&widget=false&chrome=false"></iframe></div>
+            <button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button>
+        </div>
+        <div id="sheet-9" class="sheet-section">
+            <div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=586519024&widget=false&chrome=false"></iframe></div>
+            <button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button>
+        </div>
+        <div id="sheet-10" class="sheet-section">
+            <div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1909670509&widget=false&chrome=false"></iframe></div>
+            <button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button>
+        </div>
+        <div id="sheet-11" class="sheet-section">
+            <div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=988010162&widget=false&chrome=false"></iframe></div>
+            <button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button>
+        </div>
+        <div id="sheet-12" class="sheet-section">
+            <div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=143402892&widget=false&chrome=false"></iframe></div>
+            <button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button>
+        </div>
+        <div id="sheet-13" class="sheet-section">
+            <div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=129505195&widget=false&chrome=false"></iframe></div>
+            <button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button>
+        </div>
+        <div id="sheet-14" class="sheet-section">
+            <div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1927174086&widget=false&chrome=false"></iframe></div>
+            <button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button>
+        </div>
+        <div id="sheet-15" class="sheet-section">
+            <div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=2073162937&widget=false&chrome=false"></iframe></div>
+            <button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button>
+        </div>
+        <div id="sheet-16" class="sheet-section">
+            <div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1082000321&widget=false&chrome=false"></iframe></div>
             <button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button>
         </div>
         
@@ -324,9 +418,9 @@
     <!-- Modal de Configuración -->
     <div id="settingsModal" class="modal">
         <div class="modal-content">
-            <h3>⚙️ Configuración</h3>
-            <button class="modal-btn" id="btnThemeToggle" onclick="alternarModoOscuro()">🌙 Cambiar a Modo Oscuro</button>
-            <button class="modal-btn" onclick="verInfoApp()">ℹ️ Info de la app</button>
+            <h3>Configuracion</h3>
+            <button class="modal-btn" id="btnThemeToggle" onclick="alternarModoOscuro()">Cambiar Modo</button>
+            <button class="modal-btn" onclick="verInfoApp()">Info de la app</button>
             <button class="modal-btn" style="background-color: #dc3545; color: white;" onclick="cerrarConfiguracion()">Cerrar</button>
         </div>
     </div>
@@ -343,6 +437,22 @@
             document.body.setAttribute('data-theme', savedTheme);
             actualizarTextoBotonTema(savedTheme);
         };
+
+        // Función para filtrar botones de maquinaria en tiempo real
+        function filtrarMaquinaria() {
+            let input = document.getElementById('searchMachine').value.toLowerCase();
+            let container = document.getElementById('machinesList');
+            let buttons = container.getElementsByTagName('button');
+
+            for (let i = 0; i < buttons.length; i++) {
+                let texto = buttons[i].textContent || buttons[i].innerText;
+                if (texto.toLowerCase().indexOf(input) > -1) {
+                    buttons[i].style.display = "";
+                } else {
+                    buttons[i].style.display = "none";
+                }
+            }
+        }
 
         function mostrarSeccion(idSeccion) {
             document.getElementById("home-screen").style.display = "none";
@@ -366,9 +476,9 @@
         function actualizarTextoBotonTema(theme) {
             const btnTheme = document.getElementById("btnThemeToggle");
             if (theme === 'dark') {
-                btnTheme.innerText = "☀️ Cambiar a Modo Claro";
+                btnTheme.innerText = "Cambiar a Modo Claro";
             } else {
-                btnTheme.innerText = "🌙 Cambiar a Modo Oscuro";
+                btnTheme.innerText = "Cambiar a Modo Oscuro";
             }
         }
 
@@ -404,7 +514,7 @@
                     btn.style.display = 'none';
                     if(instrucciones) instrucciones.style.display = 'none';
                     statusDiv.style.color = '#28a745'; 
-                    statusDiv.textContent = '✅ Dispositivo vinculado y activo';
+                    statusDiv.textContent = 'Dispositivo vinculado y activo';
                 }
             } catch (error) {
                 console.log('Error verificando suscripción:', error);
@@ -435,7 +545,7 @@
                 request.onsuccess = function(event) {
                     const db = event.target.result;
                     if (!db.objectStoreNames.contains('historial')) {
-                        listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--subtext-color); align-items:center;">No hay alertas registradas aún.</li></ul>';
+                        listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--subtext-color); align-items:center;">No hay alertas registradas aun.</li></ul>';
                         return;
                     }
 
@@ -446,7 +556,7 @@
                     getAllRequest.onsuccess = function() {
                         const registros = getAllRequest.result;
                         if (registros.length === 0) {
-                            listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--subtext-color); align-items:center;">No hay alertas registradas aún.</li></ul>';
+                            listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--subtext-color); align-items:center;">No hay alertas registradas aun.</li></ul>';
                             return;
                         }
 
@@ -459,7 +569,7 @@
                                 <li class="history-item">
                                     <span class="history-item-title">${reg.title}</span>
                                     <span class="history-item-body">${reg.body}</span>
-                                    <span class="history-time">🕒 ${reg.fecha}</span>
+                                    <span class="history-time">${reg.fecha}</span>
                                 </li>
                             `;
                         });
@@ -506,7 +616,7 @@
                     if(instrucciones) instrucciones.style.display = 'none';
                     
                     statusDiv.style.color = '#28a745';
-                    statusDiv.textContent = '✅ Dispositivo vinculado y activo';
+                    statusDiv.textContent = 'Dispositivo vinculado y activo';
                     
                     cargarHistorialIndexedDB(); 
                 } else {

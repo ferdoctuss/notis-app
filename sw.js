@@ -1,42 +1,684 @@
-self.addEventListener('push', function(event) {
-    if (!event.data) return;
-
-    const data = event.data.json();
-    const title = data.title || 'ALERTA MTTO MAQUINARIA';
-    const body = data.body || 'Nueva notificación recibida';
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Notificaciones MTTO - Consorcio Vial Baas</title>
     
-    const ahora = new Date();
-    const fechaStr = ahora.toLocaleDateString() + ' ' + ahora.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    <link rel="apple-touch-icon" href="icono.png">
+    <link rel="icon" type="image/png" href="icono.png">
+    <link rel="manifest" href="manifest.json">
+    
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --subtext-color: #64748b;
+            --border-color: #e2e8f0;
+            --history-bg: #ffffff;
+            --item-border: #f1f5f9;
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --success: #16a34a;
+            --success-hover: #15803d;
+            --danger: #dc2626;
+            --danger-hover: #b91c1c;
+        }
 
-    const options = {
-        body: body,
-        icon: 'icono.png',
-        badge: 'icono.png'
-    };
+        [data-theme="dark"] {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --subtext-color: #94a3b8;
+            --border-color: #334155;
+            --history-bg: #1e293b;
+            --item-border: #334155;
+            --primary: #38bdf8;
+            --primary-hover: #0ea5e9;
+            --success: #22c55e;
+            --success-hover: #16a34a;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+        }
 
-    event.waitUntil(
-        Promise.all([
-            self.registration.showNotification(title, options),
-            guardarEnCache(title, body, fechaStr)
-        ])
-    );
-});
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 96vh;
+            transition: background 0.3s ease, color 0.3s ease;
+            -webkit-text-size-adjust: 100%;
+        }
 
-// Usamos CacheStorage en lugar de IndexedDB para evitar bloqueos en iOS
-async function guardarEnCache(title, body, fecha) {
-    try {
-        const cache = await caches.open('consorcio-vial-historial-v1');
-        const timestamp = Date.now();
-        const payload = JSON.stringify({ title, body, fecha, timestamp });
-        await cache.put('/alerta-' + timestamp, new Response(payload, {
-            headers: { 'Content-Type': 'application/json' }
-        }));
-    } catch (err) {
-        console.error('Error guardando en caché:', err);
-    }
-}
+        .container {
+            max-width: 480px;
+            width: 100%;
+            background: transparent;
+            padding: 0;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        
+        .header-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 16px;
+            background: var(--card-bg);
+            padding: 12px 14px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border-color);
+        }
 
-self.addEventListener('notificationclick', function(event) {
-    event.notification.close();
-    event.waitUntil(clients.openWindow('/'));
-});
+        .company-logo {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            padding: 2px;
+            flex-shrink: 0;
+        }
+
+        .header-titles {
+            text-align: left;
+            flex-grow: 1;
+            margin-left: 10px;
+        }
+
+        .company-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin: 0;
+            letter-spacing: -0.2px;
+        }
+
+        .app-subtitle {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--subtext-color);
+            margin: 2px 0 0 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .action-btn {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            font-size: 16px;
+            cursor: pointer;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9px;
+            transition: all 0.2s;
+        }
+        .action-btn:hover { background: var(--border-color); }
+
+        .search-wrapper {
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 14px 12px 38px;
+            font-size: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            box-sizing: border-box;
+            background: var(--card-bg);
+            color: var(--text-color);
+            outline: none;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--subtext-color);
+            font-size: 15px;
+            pointer-events: none;
+        }
+
+        .machines-container {
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 4px;
+            margin-bottom: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 10px;
+            background: var(--card-bg);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .machines-container::-webkit-scrollbar {
+            width: 5px;
+        }
+        .machines-container::-webkit-scrollbar-thumb {
+            background-color: var(--border-color);
+            border-radius: 10px;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn:hover { background-color: var(--primary-hover); }
+
+        .btn-secondary {
+            background-color: var(--danger);
+            padding: 12px;
+            font-size: 14px;
+        }
+        .btn-secondary:hover { background-color: var(--danger-hover); }
+
+        .btn-sheet {
+            background-color: var(--success);
+        }
+        .btn-sheet:hover { background-color: var(--success-hover); }
+
+        .sheet-section {
+            display: none;
+            margin-top: 5px;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .iframe-wrapper {
+            width: 100%;
+            height: 62vh;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            margin-bottom: 12px;
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .history-container {
+            margin-top: 14px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 14px;
+            text-align: left;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+        .history-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--subtext-color);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .history-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 130px;
+            overflow-y: auto;
+        }
+        .history-item {
+            font-size: 12px;
+            padding: 8px 4px;
+            border-bottom: 1px solid var(--item-border);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .history-item:last-child { border-bottom: none; }
+        .history-item-title {
+            font-weight: 700;
+            color: var(--text-color);
+            text-transform: uppercase;
+        }
+        .history-item-body {
+            color: var(--subtext-color);
+        }
+        .history-time {
+            color: var(--subtext-color);
+            font-size: 10px;
+            align-self: flex-end;
+            font-weight: 500;
+        }
+
+        #status { 
+            margin-top: 8px; 
+            font-weight: 500; 
+            color: var(--subtext-color); 
+            word-break: break-all; 
+            font-size: 13px; 
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            padding: 24px;
+            border-radius: 16px;
+            width: 85%;
+            max-width: 300px;
+            text-align: center;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+        }
+        .modal-content h3 { margin-top: 0; font-size: 16px; font-weight: 700; color: var(--text-color); }
+        .modal-btn {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.2s;
+        }
+        .modal-btn:hover { background-color: var(--border-color); }
+    </style>
+</head>
+<body data-theme="light">
+
+    <div class="container">
+        <div class="header-box">
+            <img src="icono.png" alt="Logo" class="company-logo">
+            <div class="header-titles">
+                <h1 class="company-title">Consorcio Vial Baas</h1>
+                <p class="app-subtitle">Seguimiento de Maquinaria</p>
+            </div>
+            <div class="header-actions">
+                <button class="action-btn" onclick="recargarApp()" title="Recargar Web">🔄</button>
+                <button class="action-btn" onclick="abrirConfiguracion()" title="Configuración">⚙️</button>
+            </div>
+        </div>
+        
+        <div id="home-screen">
+            <div class="search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchMachine" class="search-input" placeholder="Buscar equipo o maquinaria..." onkeyup="filtrarMaquinaria()">
+            </div>
+
+            <div class="machines-container" id="machinesList">
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-1')">Excavadora 1 (336 D2L)</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-2')">Excavadora 2 (320)</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-3')">Excavadora 3 (336 DL)</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-4')">Excavadora 4 (PC210 K)</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-5')">Cargador F. (CAT)</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-6')">Cargador F. (KOMATSU)</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-7')">Retro Excavadora (John Deere)</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-8')">Retro Excavadora (Cat)</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-9')">Motoniveladora (GD555-5)</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-10')">Rodillo 1 (CS533E CAT)</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-11')">Rodillo 3 (CS533C CAT)</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-12')">Mixer</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-13')">Mini Cargador (Manitou)</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-14')">Rodillo Rolas</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-15')">Rodillo Neumático 3</button>
+                <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-16')">Pavimentadora 3</button>
+            </div>
+            
+            <p id="instruccionesBtn" style="margin: 10px 0 6px 0; font-weight: 600; font-size: 13px; color: var(--subtext-color);">Estado del sistema:</p>
+            <button id="notifyBtn" class="btn" style="background-color: var(--primary);">Activar Notificaciones</button>
+            <div id="status"></div>
+
+            <div class="history-container">
+                <div class="history-title">Historial de Alertas</div>
+                <div id="lista-historial"><ul class="history-list"><li class="history-item" style="color:var(--subtext-color); text-align:center;">Cargando historial...</li></ul></div>
+            </div>
+        </div>
+
+        <!-- Secciones de Hojas de Cálculo -->
+        <div id="sheet-1" class="sheet-section"><div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=700898144&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-2" class="sheet-section"><div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=387446334&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-3" class="sheet-section"><div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=271220595&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-4" class="sheet-section"><div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1449285887&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-5" class="sheet-section"><div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=2036388488&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-6" class="sheet-section"><div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=302364632&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-7" class="sheet-section"><div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1033787954&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-8" class="sheet-section"><div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1368905167&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-9" class="sheet-section"><div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=586519024&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-10" class="sheet-section"><div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1909670509&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-11" class="sheet-section"><div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=988010162&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-12" class="sheet-section"><div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=143402892&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-13" class="sheet-section"><div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=129505195&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-14" class="sheet-section"><div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1927174086&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-15" class="sheet-section"><div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=2073162937&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+        <div id="sheet-16" class="sheet-section"><div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=1082000321&widget=false&chrome=false"></iframe></div><button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button></div>
+    </div>
+
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <h3>Configuración</h3>
+            <button class="modal-btn" id="btnThemeToggle" onclick="alternarModoOscuro()">Cambiar Modo</button>
+            <button class="modal-btn" onclick="verInfoApp()">Información</button>
+            <button class="modal-btn" style="background-color: var(--danger); color: white;" onclick="cerrarConfiguracion()">Cerrar</button>
+        </div>
+    </div>
+
+    <script>
+        const publicVapidKey = 'BN1XBI7tIkwCShqM8pv3-sDzRwODMCFFn4Rtl3yMcPJul8bXx2hZNv7IHnBLceOOfUlEbXXpUPpX9pFIc82Sg2s';
+        const statusDiv = document.getElementById('status');
+        const btn = document.getElementById('notifyBtn');
+        const instrucciones = document.getElementById('instruccionesBtn');
+
+        window.onload = function() {
+            cargarHistorialIndexedDB();
+
+            try {
+                const savedTheme = localStorage.getItem('theme_mode') || 'light';
+                document.body.setAttribute('data-theme', savedTheme);
+                actualizarTextoBotonTema(savedTheme);
+            } catch(e) {}
+        };
+
+        function recargarApp() {
+            window.location.href = window.location.pathname + '?v=' + new Date().getTime();
+        }
+
+        function filtrarMaquinaria() {
+            let input = document.getElementById('searchMachine').value.toLowerCase();
+            let container = document.getElementById('machinesList');
+            let buttons = container.getElementsByTagName('button');
+
+            for (let i = 0; i < buttons.length; i++) {
+                let texto = buttons[i].textContent || buttons[i].innerText;
+                if (texto.toLowerCase().indexOf(input) > -1) {
+                    buttons[i].style.display = "";
+                } else {
+                    buttons[i].style.display = "none";
+                }
+            }
+        }
+
+        function mostrarSeccion(idSeccion) {
+            document.getElementById("home-screen").style.display = "none";
+            document.querySelectorAll('.sheet-section').forEach(el => el.style.display = "none");
+            document.getElementById(idSeccion).style.display = "block";
+        }
+
+        function volverInicio() {
+            document.querySelectorAll('.sheet-section').forEach(el => el.style.display = "none");
+            document.getElementById("home-screen").style.display = "block";
+        }
+
+        function abrirConfiguracion() {
+            document.getElementById("settingsModal").style.display = "flex";
+        }
+
+        function cerrarConfiguracion() {
+            document.getElementById("settingsModal").style.display = "none";
+        }
+
+        function actualizarTextoBotonTema(theme) {
+            const btnTheme = document.getElementById("btnThemeToggle");
+            if (theme === 'dark') {
+                btnTheme.innerText = "Cambiar a Modo Claro";
+            } else {
+                btnTheme.innerText = "Cambiar a Modo Oscuro";
+            }
+        }
+
+        function alternarModoOscuro() {
+            try {
+                const currentTheme = document.body.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.body.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme_mode', newTheme);
+                actualizarTextoBotonTema(newTheme);
+            } catch(e) {}
+        }
+
+        function verInfoApp() {
+            alert("App de Seguimiento de Maquinaria MTTO - Consorcio Vial Baas");
+        }
+
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
+        }
+
+        async function verificarSuscripcionActiva() {
+            try {
+                const register = await navigator.serviceWorker.ready;
+                const subscription = await register.pushManager.getSubscription();
+                
+                if (subscription) {
+                    btn.style.display = 'none';
+                    if(instrucciones) instrucciones.style.display = 'none';
+                    statusDiv.style.color = 'var(--success)'; 
+                    statusDiv.textContent = 'Dispositivo vinculado y activo';
+                }
+            } catch (error) {}
+        }
+
+        if ('serviceWorker' in navigator) {
+            // VERSIÓN 15: Conecta el receptor en tiempo real
+            navigator.serviceWorker.register('/notis-app/sw.js?v=15')
+                .then(() => {
+                    verificarSuscripcionActiva(); 
+                })
+                .catch(err => console.log('Error SW:', err));
+
+            // MAGIA: Escuchar al Service Worker e inyectar la alerta en tiempo real
+            navigator.serviceWorker.addEventListener('message', function(event) {
+                if (event.data && event.data.tipo === 'NUEVA_ALERTA_EN_TIEMPO_REAL') {
+                    inyectarAlertaVisual(event.data.datos);
+                }
+            });
+        }
+
+        // Función que dibuja la alerta instantáneamente sin abrir la base de datos
+        function inyectarAlertaVisual(alerta) {
+            const listaDiv = document.getElementById('lista-historial');
+            let ul = listaDiv.querySelector('ul.history-list');
+            
+            if (!ul || ul.innerText.includes('No hay alertas') || ul.innerText.includes('Cargando')) {
+                listaDiv.innerHTML = '<ul class="history-list"></ul>';
+                ul = listaDiv.querySelector('ul.history-list');
+            }
+
+            const li = document.createElement('li');
+            li.className = 'history-item';
+            li.innerHTML = `
+                <span class="history-item-title">${alerta.title || 'Alerta'}</span>
+                <span class="history-item-body">${alerta.body || ''}</span>
+                <span class="history-time">${alerta.fecha || ''}</span>
+            `;
+            
+            // Insertar arriba del todo
+            ul.insertBefore(li, ul.firstChild);
+            
+            // Mantener solo las últimas 20
+            if (ul.children.length > 20) {
+                ul.removeChild(ul.lastChild);
+            }
+        }
+
+        // Carga normal inicial (cuando abres la app la primera vez)
+        function cargarHistorialIndexedDB() {
+            const listaDiv = document.getElementById('lista-historial');
+
+            try {
+                if (!window.indexedDB) {
+                    listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--subtext-color); text-align:center;">Tu navegador no soporta historial local.</li></ul>';
+                    return;
+                }
+
+                const request = indexedDB.open('NotisAppDB', 1);
+
+                request.onupgradeneeded = function(event) {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('historial')) {
+                        db.createObjectStore('historial', { keyPath: 'id', autoIncrement: true });
+                    }
+                };
+
+                request.onsuccess = function(event) {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('historial')) {
+                        listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--subtext-color); text-align:center;">No hay alertas registradas aun.</li></ul>';
+                        db.close();
+                        return;
+                    }
+
+                    try {
+                        const transaction = db.transaction('historial', 'readonly');
+                        const store = transaction.objectStore('historial');
+                        const getAllRequest = store.getAll();
+
+                        getAllRequest.onsuccess = function() {
+                            const registros = getAllRequest.result;
+                            if (!registros || registros.length === 0) {
+                                listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--subtext-color); text-align:center;">No hay alertas registradas aun.</li></ul>';
+                                db.close();
+                                return;
+                            }
+
+                            registros.reverse(); 
+                            const ultimas20 = registros.slice(0, 20);
+
+                            let html = '<ul class="history-list">';
+                            ultimas20.forEach(reg => {
+                                html += `
+                                    <li class="history-item">
+                                        <span class="history-item-title">${reg.title || 'Alerta'}</span>
+                                        <span class="history-item-body">${reg.body || ''}</span>
+                                        <span class="history-time">${reg.fecha || ''}</span>
+                                    </li>
+                                `;
+                            });
+                            html += '</ul>';
+                            listaDiv.innerHTML = html;
+                        };
+
+                        transaction.oncomplete = function() {
+                            db.close();
+                        };
+                    } catch (e) {
+                        listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--danger); text-align:center;">Error al procesar el historial.</li></ul>';
+                        db.close();
+                    }
+                };
+            } catch(e) {}
+        }
+
+        btn.addEventListener('click', async () => {
+            if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                statusDiv.textContent = 'Este navegador no soporta Push Notifications.';
+                return;
+            }
+
+            try {
+                statusDiv.style.color = 'var(--text-color)';
+                statusDiv.textContent = 'Solicitando permisos...';
+                
+                const permission = await Notification.requestPermission();
+                
+                if (permission === 'granted') {
+                    statusDiv.textContent = 'Cargando memoria...';
+
+                    await navigator.serviceWorker.register('/notis-app/sw.js?v=15');
+                    const register = await navigator.serviceWorker.ready;
+                    
+                    statusDiv.textContent = 'Conectando dispositivo...';
+                    const convertedKey = urlBase64ToUint8Array(publicVapidKey);
+                    const subscription = await register.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: convertedKey
+                    });
+
+                    statusDiv.textContent = 'Enviando datos al Servidor...';
+                    await fetch('https://notis-server.onrender.com/subscribe', {
+                        method: 'POST',
+                        body: JSON.stringify(subscription),
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+
+                    btn.style.display = 'none';
+                    if(instrucciones) instrucciones.style.display = 'none';
+                    
+                    statusDiv.style.color = 'var(--success)';
+                    statusDiv.textContent = 'Dispositivo vinculado y activo';
+                    
+                    cargarHistorialIndexedDB(); 
+                } else {
+                    statusDiv.style.color = 'var(--danger)';
+                    statusDiv.textContent = 'Permisos de notificación denegados.';
+                }
+            } catch (error) {
+                statusDiv.style.color = 'var(--danger)';
+                statusDiv.textContent = 'Error: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>

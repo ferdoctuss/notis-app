@@ -11,37 +11,48 @@
     
     <style>
         :root {
-            --bg-color: #f4f7f6;
+            --bg-color: #f8fafc;
             --card-bg: #ffffff;
-            --text-color: #333333;
-            --subtext-color: #555555;
-            --border-color: #e0e0e0;
-            --history-bg: #fdfdfd;
-            --item-border: #eee;
+            --text-color: #1e293b;
+            --subtext-color: #64748b;
+            --border-color: #e2e8f0;
+            --history-bg: #f8fafc;
+            --item-border: #f1f5f9;
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --success: #16a34a;
+            --success-hover: #15803d;
+            --danger: #dc2626;
+            --danger-hover: #b91c1c;
         }
 
         [data-theme="dark"] {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-color: #f1f1f1;
-            --subtext-color: #aaaaaa;
-            --border-color: #333333;
-            --history-bg: #252525;
-            --item-border: #333;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --subtext-color: #94a3b8;
+            --border-color: #334155;
+            --history-bg: #1e293b;
+            --item-border: #334155;
+            --primary: #38bdf8;
+            --primary-hover: #0ea5e9;
+            --success: #22c55e;
+            --success-hover: #16a34a;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 90vh;
+            min-height: 94vh;
             transition: background 0.3s ease, color 0.3s ease;
-            touch-action: manipulation;
             -webkit-text-size-adjust: 100%;
         }
 
@@ -49,154 +60,178 @@
             max-width: 480px;
             width: 100%;
             background: var(--card-bg);
-            padding: 25px;
-            border-radius: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 24px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
             text-align: center;
             position: relative;
-            transition: background 0.3s ease;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
         }
         
-        /* Encabezado */
+        /* Encabezado Profesional */
         .header-box {
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
             position: relative;
             margin-bottom: 20px;
-            padding-top: 5px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .company-logo {
-            position: absolute;
-            left: 0;
-            width: 48px;
-            height: 48px;
+            width: 42px;
+            height: 42px;
             object-fit: contain;
-            border-radius: 8px;
+            border-radius: 10px;
             background: #fff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
             padding: 2px;
+            flex-shrink: 0;
         }
 
         .header-titles {
-            text-align: center;
-            width: 100%;
-            padding-left: 50px;
-            padding-right: 40px;
+            text-align: left;
+            flex-grow: 1;
+            margin-left: 12px;
         }
 
         .company-title {
-            font-size: 16px;
-            font-weight: 800;
-            color: #1a365d;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-color);
             margin: 0;
-            letter-spacing: 0.5px;
+            letter-spacing: -0.2px;
         }
-        [data-theme="dark"] .company-title { color: #90cdf4; }
 
         .app-subtitle {
-            font-size: 14px;
-            font-weight: 600;
+            font-size: 12px;
+            font-weight: 500;
             color: var(--subtext-color);
-            margin: 4px 0 0 0;
+            margin: 2px 0 0 0;
         }
 
         .settings-btn {
-            position: absolute;
-            right: 0;
-            top: 5px;
-            background: none;
-            border: none;
-            font-size: 22px;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            font-size: 18px;
             cursor: pointer;
-            padding: 5px;
-            border-radius: 50%;
-            transition: background 0.2s;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            transition: all 0.2s;
+            flex-shrink: 0;
         }
-        .settings-btn:hover { background: rgba(0,0,0,0.05); }
+        .settings-btn:hover { background: var(--border-color); }
 
-        /* Buscador de Maquinaria */
+        /* Buscador estilizado */
+        .search-wrapper {
+            position: relative;
+            margin-bottom: 14px;
+        }
+
         .search-input {
             width: 100%;
-            padding: 12px 14px;
+            padding: 12px 14px 12px 38px;
             font-size: 14px;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            margin-bottom: 12px;
+            border-radius: 12px;
             box-sizing: border-box;
             background: var(--bg-color);
             color: var(--text-color);
             outline: none;
-            transition: border-color 0.2s;
+            transition: all 0.2s;
         }
         .search-input:focus {
-            border-color: #28a745;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
         }
 
-        /* Contenedor con scroll para los botones de maquinaria */
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--subtext-color);
+            font-size: 15px;
+            pointer-events: none;
+        }
+
+        /* Contenedor de maquinaria con desplazamiento fluido */
         .machines-container {
-            max-height: 240px;
+            max-height: 220px;
             overflow-y: auto;
             padding-right: 4px;
-            margin-bottom: 15px;
+            margin-bottom: 16px;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 12px;
             padding: 8px;
             background: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
 
         .machines-container::-webkit-scrollbar {
-            width: 6px;
+            width: 5px;
         }
         .machines-container::-webkit-scrollbar-thumb {
             background-color: var(--border-color);
-            border-radius: 4px;
+            border-radius: 10px;
         }
 
         .btn {
-            background-color: #007bff;
+            background-color: var(--primary);
             color: white;
             border: none;
             padding: 12px 16px;
             font-size: 14px;
             font-weight: 600;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             width: 100%;
-            transition: background 0.2s ease, transform 0.1s;
-            margin-bottom: 8px;
+            transition: all 0.2s ease;
             box-sizing: border-box;
             text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
         }
         .btn:active { transform: scale(0.98); }
-        .btn:hover { background-color: #0056b3; }
+        .btn:hover { background-color: var(--primary-hover); }
 
         .btn-secondary {
-            background-color: #dc3545;
+            background-color: var(--danger);
             padding: 12px;
-            font-size: 15px;
+            font-size: 14px;
         }
-        .btn-secondary:hover { background-color: #c82333; }
+        .btn-secondary:hover { background-color: var(--danger-hover); }
 
         .btn-sheet {
-            background-color: #28a745;
-            margin-bottom: 8px;
+            background-color: var(--success);
         }
-        .btn-sheet:hover { background-color: #218838; }
+        .btn-sheet:hover { background-color: var(--success-hover); }
 
         .sheet-section {
             display: none;
-            margin-top: 15px;
+            margin-top: 5px;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .iframe-wrapper {
             width: 100%;
-            height: 60vh;
-            border-radius: 8px;
+            height: 58vh;
+            border-radius: 12px;
             overflow: hidden;
-            border: 2px solid var(--border-color);
-            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 14px;
             background: #fff;
         }
         iframe {
@@ -205,9 +240,9 @@
             border: none;
         }
 
-        /* Historial */
+        /* Historial Limpio */
         .history-container {
-            margin-top: 15px;
+            margin-top: 16px;
             background: var(--history-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
@@ -215,31 +250,31 @@
             text-align: left;
         }
         .history-title {
-            font-size: 14px;
-            font-weight: bold;
-            color: var(--text-color);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--subtext-color);
             margin-bottom: 8px;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .history-list {
             list-style: none;
             padding: 0;
             margin: 0;
-            max-height: 140px;
+            max-height: 130px;
             overflow-y: auto;
         }
         .history-item {
             font-size: 12px;
-            padding: 6px 0;
+            padding: 8px 4px;
             border-bottom: 1px solid var(--item-border);
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
             gap: 2px;
         }
+        .history-item:last-child { border-bottom: none; }
         .history-item-title {
-            font-weight: bold;
+            font-weight: 700;
             color: var(--text-color);
             text-transform: uppercase;
         }
@@ -250,6 +285,7 @@
             color: var(--subtext-color);
             font-size: 10px;
             align-self: flex-end;
+            font-weight: 500;
         }
 
         #status { 
@@ -260,64 +296,68 @@
             font-size: 13px; 
         }
 
-        /* Modal */
+        /* Modal Elegante */
         .modal {
             display: none;
             position: fixed;
             z-index: 1000;
             left: 0; top: 0;
             width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.5);
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
             align-items: center;
             justify-content: center;
         }
         .modal-content {
             background-color: var(--card-bg);
             color: var(--text-color);
-            padding: 25px;
-            border-radius: 12px;
+            padding: 24px;
+            border-radius: 16px;
             width: 85%;
-            max-width: 320px;
+            max-width: 300px;
             text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
         }
-        .modal-content h3 { margin-top: 0; color: #007bff; }
+        .modal-content h3 { margin-top: 0; font-size: 16px; font-weight: 700; color: var(--text-color); }
         .modal-btn {
-            background-color: #f1f1f1;
-            color: #333;
-            border: none;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
             padding: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 10px;
             cursor: pointer;
             width: 100%;
             margin-top: 10px;
-            transition: background 0.2s;
+            transition: all 0.2s;
         }
-        .modal-btn:hover { background-color: #e0e0e0; }
-        [data-theme="dark"] .modal-btn { background-color: #333; color: #fff; }
-        [data-theme="dark"] .modal-btn:hover { background-color: #444; }
+        .modal-btn:hover { background-color: var(--border-color); }
     </style>
 </head>
 <body data-theme="light">
 
     <div class="container">
+        <!-- Encabezado -->
         <div class="header-box">
             <img src="icono.png" alt="Logo" class="company-logo">
             <div class="header-titles">
-                <h1 class="company-title">CONSORCIO VIAL BAAS</h1>
-                <p class="app-subtitle">Notificaciones MTTO</p>
+                <h1 class="company-title">Consorcio Vial Baas</h1>
+                <p class="app-subtitle">Panel de Mantenimiento</p>
             </div>
-            <button class="settings-btn" onclick="abrirConfiguracion()" title="Configuracion">⚙️</button>
+            <button class="settings-btn" onclick="abrirConfiguracion()" title="Configuración">⚙️</button>
         </div>
         
         <!-- Pantalla de Inicio -->
         <div id="home-screen">
-            <!-- Barra de búsqueda rápida para filtrar maquinaria -->
-            <input type="text" id="searchMachine" class="search-input" placeholder="Buscar maquinaria..." onkeyup="filtrarMaquinaria()">
+            <!-- Buscador con icono -->
+            <div class="search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchMachine" class="search-input" placeholder="Buscar equipo o maquinaria..." onkeyup="filtrarMaquinaria()">
+            </div>
 
-            <!-- Contenedor con barra de desplazamiento para mantener orden y limpieza -->
+            <!-- Listado de Maquinaria -->
             <div class="machines-container" id="machinesList">
                 <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-1')">Excavadora 1 (336 D2L)</button>
                 <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-2')">Excavadora 2 (320)</button>
@@ -337,17 +377,17 @@
                 <button class="btn btn-sheet" onclick="mostrarSeccion('sheet-16')">Pavimentadora 3</button>
             </div>
             
-            <p id="instruccionesBtn" style="margin: 10px 0 8px 0; font-weight: 600; font-size: 13px;">Sistema de alertas:</p>
-            <button id="notifyBtn" class="btn" style="background-color: #007bff;">Activar Notificaciones</button>
+            <p id="instruccionesBtn" style="margin: 12px 0 8px 0; font-weight: 600; font-size: 13px; color: var(--subtext-color);">Estado del sistema:</p>
+            <button id="notifyBtn" class="btn" style="background-color: var(--primary);">Activar Notificaciones</button>
             <div id="status"></div>
 
             <div class="history-container">
                 <div class="history-title">Historial de Alertas</div>
-                <div id="lista-historial"><ul class="history-list"><li style="color:#999; text-align:center; padding: 6px;">Cargando historial...</li></ul></div>
+                <div id="lista-historial"><ul class="history-list"><li class="history-item" style="color:var(--subtext-color); align-items:center;">Cargando historial...</li></ul></div>
             </div>
         </div>
 
-        <!-- Secciones individuales de hojas integradas -->
+        <!-- Secciones de Hojas de Cálculo -->
         <div id="sheet-1" class="sheet-section">
             <div class="iframe-wrapper"><iframe src="https://docs.google.com/spreadsheets/d/1QfoGzy5KZjKqsBLCrEGG5a-Cs5YElEmDC38fdN67chY/htmlembed?gid=700898144&widget=false&chrome=false"></iframe></div>
             <button class="btn btn-secondary" onclick="volverInicio()">Volver al Inicio</button>
@@ -418,10 +458,10 @@
     <!-- Modal de Configuración -->
     <div id="settingsModal" class="modal">
         <div class="modal-content">
-            <h3>Configuracion</h3>
+            <h3>Configuración</h3>
             <button class="modal-btn" id="btnThemeToggle" onclick="alternarModoOscuro()">Cambiar Modo</button>
-            <button class="modal-btn" onclick="verInfoApp()">Info de la app</button>
-            <button class="modal-btn" style="background-color: #dc3545; color: white;" onclick="cerrarConfiguracion()">Cerrar</button>
+            <button class="modal-btn" onclick="verInfoApp()">Información</button>
+            <button class="modal-btn" style="background-color: var(--danger); color: white;" onclick="cerrarConfiguracion()">Cerrar</button>
         </div>
     </div>
 
@@ -438,7 +478,6 @@
             actualizarTextoBotonTema(savedTheme);
         };
 
-        // Función para filtrar botones de maquinaria en tiempo real
         function filtrarMaquinaria() {
             let input = document.getElementById('searchMachine').value.toLowerCase();
             let container = document.getElementById('machinesList');
@@ -513,7 +552,7 @@
                 if (subscription) {
                     btn.style.display = 'none';
                     if(instrucciones) instrucciones.style.display = 'none';
-                    statusDiv.style.color = '#28a745'; 
+                    statusDiv.style.color = 'var(--success)'; 
                     statusDiv.textContent = 'Dispositivo vinculado y activo';
                 }
             } catch (error) {
@@ -545,7 +584,7 @@
                 request.onsuccess = function(event) {
                     const db = event.target.result;
                     if (!db.objectStoreNames.contains('historial')) {
-                        listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--subtext-color); align-items:center;">No hay alertas registradas aun.</li></ul>';
+                        listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--subtext-color); text-align:center;">No hay alertas registradas aun.</li></ul>';
                         return;
                     }
 
@@ -556,7 +595,7 @@
                     getAllRequest.onsuccess = function() {
                         const registros = getAllRequest.result;
                         if (registros.length === 0) {
-                            listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--subtext-color); align-items:center;">No hay alertas registradas aun.</li></ul>';
+                            listaDiv.innerHTML = '<ul class="history-list"><li class="history-item" style="color:var(--subtext-color); text-align:center;">No hay alertas registradas aun.</li></ul>';
                             return;
                         }
 
@@ -615,16 +654,16 @@
                     btn.style.display = 'none';
                     if(instrucciones) instrucciones.style.display = 'none';
                     
-                    statusDiv.style.color = '#28a745';
+                    statusDiv.style.color = 'var(--success)';
                     statusDiv.textContent = 'Dispositivo vinculado y activo';
                     
                     cargarHistorialIndexedDB(); 
                 } else {
-                    statusDiv.style.color = '#dc3545';
+                    statusDiv.style.color = 'var(--danger)';
                     statusDiv.textContent = 'Permisos de notificación denegados.';
                 }
             } catch (error) {
-                statusDiv.style.color = '#dc3545';
+                statusDiv.style.color = 'var(--danger)';
                 statusDiv.textContent = 'Error: ' + error.message;
             }
         });

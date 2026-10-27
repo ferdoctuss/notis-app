@@ -296,6 +296,11 @@
             color: var(--primary);
         }
 
+        .mtto-badge.badge-danger {
+            background: rgba(255, 59, 48, 0.1);
+            color: var(--danger);
+        }
+
         .mtto-body {
             font-size: 12px;
             color: var(--subtext-color);
@@ -511,7 +516,7 @@
                 </div>
             </div>
 
-            <!-- PESTAÑA 2: MANTENIMIENTOS (TARJETAS DETALLADAS) -->
+            <!-- PESTAÑA 2: MANTENIMIENTOS (4 COLUMNAS EXACTAS) -->
             <div id="tab-mantenimientos" class="tab-content">
                 <div class="mtto-container" id="mttoContainer">
                     <div style="text-align: center; color: var(--subtext-color); padding: 20px;">Cargando mantenimientos...</div>
@@ -610,7 +615,7 @@
             }
         }
 
-        // CARGADOR DINÁMICO DE MANTENIMIENTOS CON TARJETAS DETALLADAS
+        // CARGADOR DINÁMICO DE MANTENIMIENTOS (4 COLUMNAS EXACTAS)
         let mttoCargado = false;
         async function cargarDatosMantenimientos() {
             if (mttoCargado) return;
@@ -624,23 +629,25 @@
 
                 if (filas.length > 1) {
                     let html = '';
-                    // Recorremos las filas omitiendo la cabecera (fila 0)
+                    // Recorremos desde la fila 1 para omitir la cabecera
                     for (let i = 1; i < filas.length; i++) {
                         let cols = filas[i];
-                        if (cols.length > 3 && cols.some(c => c !== '')) {
-                            let equipo = cols[3] || cols[1] || 'Unidad'; // Columna de equipo o código
-                            let horasProx = cols[6] || 'N/D';            // Horas para próximo MTTO
-                            let hSigMtto = cols[11] || 'N/D';            // Horas del siguiente MTTO
-                            let hUltMtto = cols[12] || 'N/D';            // Horas del último MTTO
+                        if (cols.length > 0 && cols[0] && cols[0] !== '') {
+                            let unidad = cols[0];
+                            let horasProx = cols[1] || 'Sin datos';
+                            let hSigMtto = cols[2] || '-';
+                            let hUltMtto = cols[3] || '-';
+
+                            // Resaltar visualmente si está retrasado
+                            let badgeClass = horasProx.includes('RETRASADO') ? 'mtto-badge badge-danger' : 'mtto-badge';
 
                             html += `
                                 <div class="mtto-card">
                                     <div class="mtto-card-header">
-                                        <span class="mtto-title">🚜 ${equipo}</span>
-                                        <span class="mtto-badge">Control MTTO</span>
+                                        <span class="mtto-title">🚜 ${unidad}</span>
+                                        <span class="${badgeClass}">${horasProx}</span>
                                     </div>
                                     <div class="mtto-body">
-                                        <div>⏳ <b>Horas para próximo MTTO:</b> ${horasProx}</div>
                                         <div>⏭️ <b>H. Siguiente MTTO:</b> ${hSigMtto}</div>
                                         <div>⏱️ <b>H. Último MTTO:</b> ${hUltMtto}</div>
                                     </div>

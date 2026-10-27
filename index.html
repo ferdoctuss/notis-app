@@ -252,7 +252,7 @@
 
         /* PANEL / TARJETAS DE MANTENIMIENTO */
         .mtto-container {
-            max-height: 62vh;
+            max-height: 54vh;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
@@ -516,8 +516,13 @@
                 </div>
             </div>
 
-            <!-- PESTAÑA 2: MANTENIMIENTOS (4 COLUMNAS EXACTAS) -->
+            <!-- PESTAÑA 2: MANTENIMIENTOS (CON BARRA DE BÚSQUEDA) -->
             <div id="tab-mantenimientos" class="tab-content">
+                <div class="search-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchMtto" class="search-input" placeholder="Buscar unidad en mantenimientos..." onkeyup="filtrarMantenimientos()">
+                </div>
+
                 <div class="mtto-container" id="mttoContainer">
                     <div style="text-align: center; color: var(--subtext-color); padding: 20px;">Cargando mantenimientos...</div>
                 </div>
@@ -629,7 +634,6 @@
 
                 if (filas.length > 1) {
                     let html = '';
-                    // Recorremos desde la fila 1 para omitir la cabecera
                     for (let i = 1; i < filas.length; i++) {
                         let cols = filas[i];
                         if (cols.length > 0 && cols[0] && cols[0] !== '') {
@@ -638,7 +642,6 @@
                             let hSigMtto = cols[2] || '-';
                             let hUltMtto = cols[3] || '-';
 
-                            // Resaltar visualmente si está retrasado
                             let badgeClass = horasProx.includes('RETRASADO') ? 'mtto-badge badge-danger' : 'mtto-badge';
 
                             html += `
@@ -679,6 +682,16 @@
             for (let i = 0; i < buttons.length; i++) {
                 let texto = buttons[i].textContent || buttons[i].innerText;
                 buttons[i].style.display = (texto.toLowerCase().indexOf(input) > -1) ? "" : "none";
+            }
+        }
+
+        function filtrarMantenimientos() {
+            let input = document.getElementById('searchMtto').value.toLowerCase();
+            let container = document.getElementById('mttoContainer');
+            let cards = container.getElementsByClassName('mtto-card');
+            for (let i = 0; i < cards.length; i++) {
+                let texto = cards[i].textContent || cards[i].innerText;
+                cards[i].style.display = (texto.toLowerCase().indexOf(input) > -1) ? "" : "none";
             }
         }
 
